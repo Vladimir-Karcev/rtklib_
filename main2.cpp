@@ -223,6 +223,9 @@ int main(int argc, char* argv[]) {
 	readpcv(pcvFile, &pcvss);
 	setpcv(obs.data[0].time, &my_options, &navData, &pcvss, &pcvsr, stas);
 
+	/* read DCB parameters from BIA or BSX file */
+	readbiaf(dcbFile, &navData);
+
 	/* Read DCB values P1 -> C1 */
 	//readdcb(dcbFile, &navData, NULL);
 	//readdcb(dcbFileP1P2, &navData, NULL);

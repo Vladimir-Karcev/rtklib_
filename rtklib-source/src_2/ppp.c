@@ -462,109 +462,49 @@ static void corr_meas(const obsd_t* obs, const nav_t* nav, const double* azel,
 	double* Lc, double* Pc)
 {
 	double freq[NFREQ] = { 0 }, C1, C2;
-	int i, sys = satsys(obs->sat, NULL);
-	const double* lam = nav->lam[obs->sat - 1];
+	int i, ix = 0, frq, frq2, bias_ix, sys = satsys(obs->sat, NULL);
 
 	for (i = 0; i < opt->nf; i++) {
 		L[i] = P[i] = 0.0;
+		/* skip if low SNR or missing observations */
 		freq[i] = sat2freq(obs->sat, obs->code[i], nav);
-		if ((freq[i] == 0.0 || obs->L[i] == 0.0 || obs->P[i] == 0.0) && opt->mode != PMODE_PPP_CODE) continue;
-		if (testsnr(0, i, azel[1], obs->SNR[i] * SNR_UNIT, &opt->snrmask)) continue;
+		if (freq[i] == 0.0 || obs->L[i] == 0.0 || obs->P[i] == 0.0) continue;
+		if (testsnr(0, 0, azel[1], obs->SNR[i] * SNR_UNIT, &opt->snrmask)) continue;
 
 		/* antenna phase center and phase windup correction */
-		if (opt->mode != PMODE_PPP_CODE) 
-			L[i] = obs->L[i] * CLIGHT / freq[i] - dants[i] - dantr[i] - phw * CLIGHT / freq[i];
+		L[i] = obs->L[i] * CLIGHT / freq[i] - dants[i] - dantr[i] - phw * CLIGHT / freq[i];
 		P[i] = obs->P[i] - dants[i] - dantr[i];
 
-		// original rtklib IONO-FREE LC
-		if (opt->ionoopt == IONOOPT_IFLC) {
-			/* P1-C1,P2-C2 dcb correction (C1->P1,C2->P2) */
-			if (sys == SYS_GPS || sys == SYS_GLO) {
-				if (obs->code[i] == CODE_L1C) P[i] += nav->cbias[obs->sat - 1][1];
-				if (obs->code[i] == CODE_L2C) P[i] += nav->cbias[obs->sat - 1][2];
-			}
+		if (opt->sateph == EPHOPT_SSRAPC || opt->sateph == EPHOPT_SSRCOM) {
+			/* select SSR code correction based on code */
+			if (sys == SYS_GPS)
+				ix = (i == 0 ? CODE_L1W - 1 : CODE_L2W - 1);
+			else if (sys == SYS_GLO)
+				ix = (i == 0 ? CODE_L1P - 1 : CODE_L2P - 1);
+			else if (sys == SYS_GAL)
+				ix = (i == 0 ? CODE_L1X - 1 : CODE_L7X - 1);
+			/* apply SSR correction */
+			P[i] += (nav->ssr[obs->sat - 1].cbias[obs->code[i] - 1] - nav->ssr[obs->sat - 1].cbias[ix]);
 		}
-		// Uncombined measurement model
-		else {
-
-			/* P1-C1,P2-C2 dcb correction (C1->P1,C2->P2) */
-			if (obs->code[i] == CODE_L1C)
-				P[i] += nav->cbias[obs->sat - 1][1];
-			if (obs->code[i] == CODE_L2C) {
-				P[i] += nav->cbias[obs->sat - 1][2]; // P2 -> C2
-				P[i] += nav->cbias[obs->sat - 1][0]; // P2 -> P1
-			}
-			if (obs->code[i] == CODE_L2W) {
-				if (nav->cbias[obs->sat - 1][0] != 0.0)
-					P[i] += nav->cbias[obs->sat - 1][0]; // P2 -> P1
-				else {
-					P[i] += nav->cbias[obs->sat - 1][6]; // P2 -> C1
-					P[i] += nav->cbias[obs->sat - 1][1]; // C1 -> P1
-				}
-			}
-			if (obs->code[i] == CODE_L5Q) {
-				P[i] += nav->cbias[obs->sat - 1][3]; // C5 -> C1
-				P[i] += nav->cbias[obs->sat - 1][1]; // C1 -> P1
-			}
-			if (obs->code[i] == CODE_L7Q) {
-				P[i] += nav->cbias[obs->sat - 1][5]; // C7 -> C1
-			}
-
-			if (0) {
-				// Tgd correction
-				double b1 = 0.0, gamma = 0.0;
-
-				if (sys == SYS_GPS || sys == SYS_QZS || sys == SYS_GAL) { /* L1 */
-					b1 = gettgd(obs->sat, nav, 0);
-					double frq = sat2freq(obs->sat, obs->code[i], nav);
-					gamma = SQR(FREQ1 / frq);
-					b1 *= gamma;
-					P[i] - b1;
-				}
-				else if (sys == SYS_GAL) { /* E1 */
-
-					if (getseleph(SYS_GAL))
-						b1 = gettgd(obs->sat, nav, 0); /* BGD_E1E5a */
-					else {
-						b1 = gettgd(obs->sat, nav, 1); /* BGD_E1E5b */
-
-						double frq = sat2freq(obs->sat, obs->code[i], nav);
-						gamma = SQR(FREQ1 / frq);
-						b1 *= gamma;
-					}
-					P[i] - b1;
-				}
-				else if (sys == SYS_CMP) { /* B1I/B1Cp/B1Cd */
-
-					if (obs->code[i] == CODE_L2I)
-						b1 = gettgd(obs->sat, nav, 0); /* TGD_B1I */
-					else if (obs->code[i] == CODE_L1P)
-						b1 = gettgd(obs->sat, nav, 2); /* TGD_B1Cp */
-					else
-						b1 = gettgd(obs->sat, nav, 2) + gettgd(obs->sat, nav, 4); /* TGD_B1Cp+ISC_B1Cd */
-
-					double frq = sat2freq(obs->sat, obs->code[i], nav);
-					gamma = SQR(FREQ1 / FREQ5);
-					b1 *= gamma;
-				}
-				P[i] - b1;
+		else {   /* apply code bias corrections from file */
+			if (sys == SYS_GAL && (i == 1 || i == 2)) frq = 3 - i;  /* GAL biases are L1/L5 */
+			else frq = i;  /* other biases are L1/L2 */
+			if (frq >= MAX_CODE_BIAS_FREQ9) continue;  /* only 2 FREQ9 per system supported in code bias table */
+			bias_ix = code2bias_ix(sys, obs->code[i]); /* look up bias index in table */
+			if (bias_ix > 0) {  /*  0=ref code */
+				P[i] += nav->cbias[obs->sat - 1][frq][bias_ix - 1]; /* code bias */
 			}
 		}
 	}
-
-	/* iono-free LC */
+	/* choose FREQ9 for iono-free LC */
 	*Lc = *Pc = 0.0;
-	if (freq[0] == 0.0 || freq[1] == 0.0) return;
-	if (lam[0] == 0.0 || lam[i] == 0.0) return;
+	frq2 = L[1] == 0 ? 2 : 1;  /* if L[1]==0, try L[2] */
+	if (freq[0] == 0.0 || freq[frq2] == 0.0) return;
+	C1 = SQR(freq[0]) / (SQR(freq[0]) - SQR(freq[frq2]));
+	C2 = -SQR(freq[frq2]) / (SQR(freq[0]) - SQR(freq[frq2]));
 
-	i = 1;
-	C1 = SQR(lam[i]) / (SQR(lam[i]) - SQR(lam[0]));
-	C2 = -SQR(lam[0]) / (SQR(lam[i]) - SQR(lam[0]));
-
-	if (L[0] != 0.0 && L[1] != 0.0)
-		*Lc = C1 * L[0] + C2 * L[1];
-	if (P[0] != 0.0 && P[1] != 0.0)
-		*Pc = C1 * P[0] + C2 * P[1];
+	if (L[0] != 0.0 && L[frq2] != 0.0) *Lc = C1 * L[0] + C2 * L[frq2];
+	if (P[0] != 0.0 && P[frq2] != 0.0) *Pc = C1 * P[0] + C2 * P[frq2];
 }
 
 

@@ -134,71 +134,44 @@ static int snrmask_mf(const obsd_t* obs, const double* azel, const prcopt_t* opt
 extern /*static*/ double prange(const obsd_t* obs, const nav_t* nav, const prcopt_t* opt,
 	double* var, int freq)
 {
-	double P1, P2, P3, P, gamma, b1, b2;
-	int sat, sys;
+	double P1, P2, gamma, b1, b2;
+	int sat, sys, f2, bias_ix;
 
 	sat = obs->sat;
 	sys = satsys(sat, NULL);
 	P1 = obs->P[0];
-	P2 = obs->P[1];
-	P3 = obs->P[2];
-	P = obs->P[freq];
-	int code = obs->code[freq];
-
+	f2 = seliflc(opt->nf, satsys(obs->sat, NULL));
+	P2 = obs->P[f2];
 	*var = 0.0;
 
-	if (P1 == 0.0 || (opt->ionoopt == IONOOPT_IFLC && P2 == 0.0) || (opt->ionoopt == IONOOPT_IFLC && P3 == 0.0)) return 0.0;
-	if (P == 0.0) return 0.0;
-
-	if (opt->ionoopt == IONOOPT_IFLC) {
-
-		if (obs->code[0] == CODE_L1C) P1 += nav->cbias[sat - 1][1]; /* C1->P1 */
-		if (obs->code[1] == CODE_L2C) P2 += nav->cbias[sat - 1][2]; /* C2->P2 */
-		if (obs->code[2] == CODE_L5Q) P3 += nav->cbias[sat - 1][3] + nav->cbias[sat - 1][1]; /* L5Q->C1 + C1->P1*/
-
+	if (P1 == 0.0 || (opt->ionoopt == IONOOPT_IFLC && P2 == 0.0)) return 0.0;
+	bias_ix = code2bias_ix(sys, obs->code[0]);	/* L1 code bias */
+	if (bias_ix > 0) { /* 0=ref code */
+		P1 += nav->cbias[sat - 1][0][bias_ix - 1];
 	}
-	else {
-
-		/* DCB correction */
-		if (code == CODE_L1C) {
-			P += nav->cbias[sat - 1][1]; /* C1->P1 */
-		}
-		if (code == CODE_L2C)
-			P += nav->cbias[sat - 1][2]; /* C2->P2 */
-		if (code == CODE_L5Q) {
-			if (nav->cbias[sat - 1][3] != 0.0) {
-				P += nav->cbias[sat - 1][3]; /* C5Q->C1C */
-				P += nav->cbias[sat - 1][1]; /* C1->P1 */
-			}
-		}
-		if (code == CODE_L2W) {
-			if (nav->cbias[sat - 1][0] != 0.0)
-				P += nav->cbias[sat - 1][0]; // P2 -> P1
-			else {
-				if (nav->cbias[sat - 1][6] != 0.0) {
-					P += nav->cbias[sat - 1][6]; // P2 -> C1
-					P += nav->cbias[sat - 1][1]; // C1 -> P1
-				}
-			}
+	/* GPS code biases are L1/L2, Galileo are L1/L5 */
+	if (sys == SYS_GAL && f2 == 1) {
+		/* skip code bias, no GAL L2 bias available */
+	}
+	else {	/* apply L2 or L5 code bias */
+		bias_ix = code2bias_ix(sys, obs->code[f2]);
+		if (bias_ix > 0) { /* 0=ref code */
+			P2 += nav->cbias[sat - 1][1][bias_ix - 1]; /* L2 or L5 code bias */
 		}
 	}
-
 	if (opt->ionoopt == IONOOPT_IFLC) { /* dual-frequency */
 
-		if (P2 == 0.0)
-			P2 = P3; // Use L1-L5 IF LC (Expiremental)
-
-		if (sys == SYS_GPS || sys == SYS_QZS) { /* L1-L2,G1-G2 */
-			gamma = SQR(FREQ1 / FREQ2);
+		if (sys == SYS_GPS || sys == SYS_QZS) { /* L1-L2 or L1-L5 */
+			gamma = f2 == 1 ? SQR(FREQ1 / FREQ2) : SQR(FREQ1 / FREQ5);
 			return (P2 - gamma * P1) / (1.0 - gamma);
 		}
-		else if (sys == SYS_GLO) { /* G1-G2 */
-			gamma = SQR(FREQ1_GLO / FREQ2_GLO);
+		else if (sys == SYS_GLO) { /* G1-G2 or G1-G3 */
+			gamma = f2 == 1 ? SQR(FREQ1_GLO / FREQ2_GLO) : SQR(FREQ1_GLO / FREQ3_GLO);
 			return (P2 - gamma * P1) / (1.0 - gamma);
 		}
-		else if (sys == SYS_GAL) { /* E1-E5b */
-			gamma = SQR(FREQ1 / FREQ7);
-			if (getseleph(SYS_GAL)) { /* F/NAV */
+		else if (sys == SYS_GAL) { /* E1-E5b, E1-E5a */
+			gamma = f2 == 1 ? SQR(FREQ1 / FREQ7) : SQR(FREQ1 / FREQ5);
+			if (f2 == 1 && getseleph(SYS_GAL)) { /* F/NAV */
 				P2 -= gettgd(sat, nav, 0) - gettgd(sat, nav, 1); /* BGD_E5aE5b */
 			}
 			return (P2 - gamma * P1) / (1.0 - gamma);
@@ -216,49 +189,36 @@ extern /*static*/ double prange(const obsd_t* obs, const nav_t* nav, const prcop
 			return (P2 - gamma * P1) / (1.0 - gamma);
 		}
 	}
-	else { /* Tgd correction */
+	else { /* single-freq (L1/E1/B1) */
 		*var = SQR(ERR_CBIAS);
-		if (sys == SYS_GPS || sys == SYS_QZS) { /* L1 */
 
-			b1 = gettgd(sat, nav, 0);
-			double frq = sat2freq(obs->sat, obs->code[freq], nav);
-			gamma = SQR(FREQ1 / frq);
-			b1 *= gamma;
-			return P - b1;
+		if (sys == SYS_GPS || sys == SYS_QZS) { /* L1 */
+			b1 = gettgd(sat, nav, 0); /* TGD (m) */
+			return P1 - b1;
+		}
+		else if (sys == SYS_GLO) { /* G1 */
+			gamma = SQR(FREQ1_GLO / FREQ2_GLO);
+			b1 = gettgd(sat, nav, 0); /* -dtaun (m) */
+			return P1 - b1 / (gamma - 1.0);
 		}
 		else if (sys == SYS_GAL) { /* E1 */
-
-			if (getseleph(SYS_GAL))
-				b1 = gettgd(sat, nav, 0); /* BGD_E1E5a */
-			else {
-				b1 = gettgd(sat, nav, 1); /* BGD_E1E5b */
-
-				double frq = sat2freq(obs->sat, obs->code[freq], nav);
-				gamma = SQR(FREQ1 / frq);
-				b1 *= gamma;
-			}
-			return P - b1;
+			if (getseleph(SYS_GAL)) b1 = gettgd(sat, nav, 0); /* BGD_E1E5a */
+			else b1 = gettgd(sat, nav, 1); /* BGD_E1E5b */
+			return P1 - b1;
 		}
 		else if (sys == SYS_CMP) { /* B1I/B1Cp/B1Cd */
-
-			if (obs->code[0] == CODE_L2I)
-				b1 = gettgd(sat, nav, 0); /* TGD_B1I */
-			else if (obs->code[0] == CODE_L1P)
-				b1 = gettgd(sat, nav, 2); /* TGD_B1Cp */
-			else
-				b1 = gettgd(sat, nav, 2) + gettgd(sat, nav, 4); /* TGD_B1Cp+ISC_B1Cd */
-			double frq = sat2freq(obs->sat, obs->code[freq], nav);
-			gamma = SQR(FREQ1 / FREQ5);
-			b1 *= gamma;
-			return P - b1;
+			if (obs->code[0] == CODE_L2I) b1 = gettgd(sat, nav, 0); /* TGD_B1I */
+			else if (obs->code[0] == CODE_L1P) b1 = gettgd(sat, nav, 2); /* TGD_B1Cp */
+			else b1 = gettgd(sat, nav, 2) + gettgd(sat, nav, 4); /* TGD_B1Cp+ISC_B1Cd */
+			return P1 - b1;
 		}
 		else if (sys == SYS_IRN) { /* L5 */
 			gamma = SQR(FREQ9 / FREQ5);
 			b1 = gettgd(sat, nav, 0); /* TGD (m) */
-			return P - gamma * b1;
+			return P1 - gamma * b1;
 		}
 	}
-	return P;
+	return P1;
 }
 /* ionospheric correction ------------------------------------------------------
 * compute ionospheric correction
