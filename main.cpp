@@ -14,6 +14,7 @@ extern "C" /*static*/ void outsolstat(rtk_t* rtk);
 extern "C" /*static*/ int nextobsf(const obs_t* obs, int* i, int rcv);
 extern "C" /*static*/ void setpcv(gtime_t time, prcopt_t* popt, nav_t* nav, const pcvs_t* pcvs,
 	const pcvs_t* pcvr, const sta_t* sta);
+extern "C" /*static*/ int readbiaf(const char* file, nav_t * nav);
 
 void processObsdata(obs_t* obs) {
 
@@ -190,7 +191,7 @@ int main(int argc, char* argv[]) {
 	PMODE_PPP_KINEMA,SOLTYPE_FORWARD,
 	2,SYS_GPS | SYS_GLO | SYS_GAL | SYS_CMP,
 	15.0 * D2R,{{0,0}},											/* elmin,snrmask */
-	EPHOPT_PREC,3,3,1,0,1,                /* sateph,modear,glomodear,gpsmodear,bdsmodear,arfilter */
+	EPHOPT_PREC,0,0,0,0,1,                /* sateph,modear,glomodear,gpsmodear,bdsmodear,arfilter */
 	20,0,4,5,10,20,             /* maxout,minlock,minfixsats,minholdsats,mindropsats,minfix */
 	1,IONOOPT_TEC,TROPOPT_EST,0,1,								/* armaxiter,estion,esttrop,dynamics,tidecorr */
 	3,0,0,0,0,													/* niter,codesmooth,intpref,sbascorr,sbassatsel */
@@ -228,6 +229,9 @@ int main(int argc, char* argv[]) {
 	/* Read PCV values */
 	readpcv(pcvFile, &pcvss);
 	setpcv(obs.data[0].time, &my_options, &navData, &pcvss, &pcvsr, stas);
+
+	/* read DCB parameters from BIA or BSX file */
+	readbiaf(dcbFile, &navData);
 
 	/* Read DCB values P1 -> C1 */
 	//readdcb(dcbFile, &navData, NULL);

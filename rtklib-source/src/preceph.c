@@ -443,7 +443,7 @@ extern int code2bias_ix(int sys, int code) {
 /* read DCB parameters from BIA or BSX file ------------------------------------
 *    - supports satellite code biases only
 *-----------------------------------------------------------------------------*/
-static int readbiaf(const char *file, nav_t *nav)
+extern /*static*/ int readbiaf(const char *file, nav_t *nav)
 {
     FILE *fp;
     double cbias;
