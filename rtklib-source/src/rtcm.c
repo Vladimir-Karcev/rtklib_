@@ -4,10 +4,10 @@
 *          Copyright (C) 2009-2020 by T.TAKASU, All rights reserved.
 *
 * references :
-*     [1]  RTCM Recommended Standards for Differential GNSS (Global Navigation
-*          Satellite Systems) Service version 2.3, August 20, 2001
-*     [7]  RTCM Standard 10403.1 - Amendment 5, Differential GNSS (Global
-*          Navigation Satellite Systems) Services - version 3, July 1, 2011
+*     [1] RTCM Recommended Standards for Differential GNSS (Global Navigation
+*         Satellite Systems) Service version 2.3, August 20, 2001
+*     [7] RTCM Standard 10403.1 - Amendment 5, Differential GNSS (Global
+*         Navigation Satellite Systems) Services - version 3, July 1, 2011
 *     [10] RTCM Paper 059-2011-SC104-635 (draft Galileo and QZSS ssr messages)
 *     [15] RTCM Standard 10403.2, Differential GNSS (Global Navigation Satellite
 *          Systems) Services - version 3, with amendment 1/2, November 7, 2013
@@ -60,7 +60,7 @@ extern int encode_rtcm3(rtcm_t *rtcm, int type, int subtype, int sync);
 /* initialize rtcm control -----------------------------------------------------
 * initialize rtcm control struct and reallocate memory for observation and
 * ephemeris buffer in rtcm control struct
-* args   : rtcm_t *raw      IO  rtcm control struct
+* args   : rtcm_t *raw   IO     rtcm control struct
 * return : status (1:ok,0:memory allocation error)
 *-----------------------------------------------------------------------------*/
 extern int init_rtcm(rtcm_t *rtcm)
@@ -122,7 +122,7 @@ extern int init_rtcm(rtcm_t *rtcm)
 }
 /* free rtcm control ----------------------------------------------------------
 * free observation and ephemeris buffer in rtcm control struct
-* args   : rtcm_t *raw      IO  rtcm control struct
+* args   : rtcm_t *raw   IO     rtcm control struct
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void free_rtcm(rtcm_t *rtcm)
@@ -136,7 +136,7 @@ extern void free_rtcm(rtcm_t *rtcm)
 }
 /* input RTCM 2 message from stream --------------------------------------------
 * fetch next RTCM 2 message and input a message from byte stream
-* args   : rtcm_t *rtcm     IO  rtcm control struct
+* args   : rtcm_t *rtcm IO   rtcm control struct
 *          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 5: input station pos/ant parameters,
@@ -191,7 +191,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 }
 /* input RTCM 3 message from stream --------------------------------------------
 * fetch next RTCM 3 message and input a message from byte stream
-* args   : rtcm_t *rtcm     IO  rtcm control struct
+* args   : rtcm_t *rtcm IO   rtcm control struct
 *          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 5: input station pos/ant parameters,
@@ -287,9 +287,9 @@ extern int input_rtcm3(rtcm_t *rtcm, uint8_t data)
     return decode_rtcm3(rtcm);
 }
 /* input RTCM 2 message from file ----------------------------------------------
-* fetch next RTCM 2 message and input a messsage from file
-* args   : rtcm_t *rtcm     IO  rtcm control struct
-*          FILE  *fp        I   file pointer
+* fetch next RTCM 2 message and input a message from file
+* args   : rtcm_t *rtcm IO   rtcm control struct
+*          FILE  *fp    I    file pointer
 * return : status (-2: end of file, -1...10: same as above)
 * notes  : same as above
 *-----------------------------------------------------------------------------*/
@@ -306,9 +306,9 @@ extern int input_rtcm2f(rtcm_t *rtcm, FILE *fp)
     return 0; /* return at every 4k bytes */
 }
 /* input RTCM 3 message from file ----------------------------------------------
-* fetch next RTCM 3 message and input a messsage from file
-* args   : rtcm_t *rtcm     IO  rtcm control struct
-*          FILE  *fp        I   file pointer
+* fetch next RTCM 3 message and input a message from file
+* args   : rtcm_t *rtcm IO   rtcm control struct
+*          FILE  *fp    I    file pointer
 * return : status (-2: end of file, -1...10: same as above)
 * notes  : same as above
 *-----------------------------------------------------------------------------*/
@@ -326,9 +326,9 @@ extern int input_rtcm3f(rtcm_t *rtcm, FILE *fp)
 }
 /* generate RTCM 2 message -----------------------------------------------------
 * generate RTCM 2 message
-* args   : rtcm_t *rtcm     IO  rtcm control struct
-*          int    type      I   message type
-*          int    sync      I   sync flag (1:another message follows)
+* args   : rtcm_t *rtcm   IO rtcm control struct
+*          int    type    I  message type
+*          int    sync    I  sync flag (1:another message follows)
 * return : status (1:ok,0:error)
 *-----------------------------------------------------------------------------*/
 extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
@@ -343,10 +343,10 @@ extern int gen_rtcm2(rtcm_t *rtcm, int type, int sync)
 }
 /* generate RTCM 3 message -----------------------------------------------------
 * generate RTCM 3 message
-* args   : rtcm_t *rtcm     IO  rtcm control struct
-*          int    type      I   message type
+* args   : rtcm_t *rtcm   IO rtcm control struct
+*          int    type    I  message type
 *          int    subtype   I   message subtype
-*          int    sync      I   sync flag (1:another message follows)
+*          int    sync    I  sync flag (1:another message follows)
 * return : status (1:ok,0:error)
 * notes  : For rtcm 3 msm, the {nsat} x {nsig} in rtcm->obs should not exceed
 *          64. If {nsat} x {nsig} of the input obs data exceeds 64, separate

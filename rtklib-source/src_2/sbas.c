@@ -15,7 +15,8 @@
 *
 * version : $Revision: 1.1 $ $Date: 2008/07/17 21:48:06 $
 * history : 2007/10/14 1.0  new
-*           2009/01/24 1.1  modify sbspntpos() api
+*           2009/01/24 1.1  modify sbs
+() api
 *                           improve fast/ion correction update
 *           2009/04/08 1.2  move function crc24q() to rcvlog.c
 *                           support glonass, galileo and qzss
@@ -879,7 +880,7 @@ extern int sbssatcorr(gtime_t time, int sat, const nav_t *nav, double *rs,
     
     dts[0]+=dclk+prc/CLIGHT;
     
-    trace(4,"sbssatcorr: sat=%2d drs=%6.3f %6.3f %6.3f dclk=%.3f %.3f var=%.3f\n",
+    trace(5,"sbssatcorr: sat=%2d drs=%6.3f %6.3f %6.3f dclk=%.3f %.3f var=%.3f\n",
           sat,drs[0],drs[1],drs[2],dclk,prc/CLIGHT,*var);
     
     return 1;

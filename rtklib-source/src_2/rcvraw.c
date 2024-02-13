@@ -89,7 +89,7 @@ static uint32_t getbitu3(const uint8_t *buff, int p1, int l1, int p2, int l2,
             getbitu(buff,p3,l3);
 }
 static int32_t getbits3(const uint8_t *buff, int p1, int l1, int p2, int l2,
-                    int p3, int l3)
+                        int p3, int l3)
 {
     if (getbitu(buff,p1,1))
         return (int32_t)((getbits(buff,p1,l1)<<(l2+l3))+
@@ -260,15 +260,15 @@ static int decode_gal_inav_eph(const uint8_t *buff, eph_t *eph)
     
     i=128; /* word type 1 */
     type[0]     =getbitu(buff,i, 6);              i+= 6;
-    iod_nav[0] =getbitu(buff,i,10);              i+=10;
+    iod_nav[0]  =getbitu(buff,i,10);              i+=10;
     eph_gal.toes=getbitu(buff,i,14)*60.0;         i+=14;
     eph_gal.M0  =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
     eph_gal.e   =getbitu(buff,i,32)*P2_33;        i+=32;
-    sqrtA      =getbitu(buff,i,32)*P2_19;
+    sqrtA       =getbitu(buff,i,32)*P2_19;
     
     i=128*2; /* word type 2 */
     type[1]     =getbitu(buff,i, 6);              i+= 6;
-    iod_nav[1] =getbitu(buff,i,10);              i+=10;
+    iod_nav[1]  =getbitu(buff,i,10);              i+=10;
     eph_gal.OMG0=getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
     eph_gal.i0  =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
     eph_gal.omg =getbits(buff,i,32)*P2_31*SC2RAD; i+=32;
@@ -276,7 +276,7 @@ static int decode_gal_inav_eph(const uint8_t *buff, eph_t *eph)
     
     i=128*3; /* word type 3 */
     type[2]     =getbitu(buff,i, 6);              i+= 6;
-    iod_nav[2] =getbitu(buff,i,10);              i+=10;
+    iod_nav[2]  =getbitu(buff,i,10);              i+=10;
     eph_gal.OMGd=getbits(buff,i,24)*P2_43*SC2RAD; i+=24;
     eph_gal.deln=getbits(buff,i,16)*P2_43*SC2RAD; i+=16;
     eph_gal.cuc =getbits(buff,i,16)*P2_29;        i+=16;
@@ -287,11 +287,11 @@ static int decode_gal_inav_eph(const uint8_t *buff, eph_t *eph)
     
     i=128*4; /* word type 4 */
     type[3]     =getbitu(buff,i, 6);              i+= 6;
-    iod_nav[3] =getbitu(buff,i,10);              i+=10;
-    svid       =getbitu(buff,i, 6);              i+= 6;
+    iod_nav[3]  =getbitu(buff,i,10);              i+=10;
+    svid        =getbitu(buff,i, 6);              i+= 6;
     eph_gal.cic =getbits(buff,i,16)*P2_29;        i+=16;
     eph_gal.cis =getbits(buff,i,16)*P2_29;        i+=16;
-    toc        =getbitu(buff,i,14)*60.0;         i+=14;
+    toc         =getbitu(buff,i,14)*60.0;         i+=14;
     eph_gal.f0  =getbits(buff,i,31)*P2_34;        i+=31;
     eph_gal.f1  =getbits(buff,i,21)*P2_46;        i+=21;
     eph_gal.f2  =getbits(buff,i, 6)*P2_59;
@@ -300,9 +300,9 @@ static int decode_gal_inav_eph(const uint8_t *buff, eph_t *eph)
     type[4]     =getbitu(buff,i, 6);              i+= 6+11+11+14+5;
     eph_gal.tgd[0]=getbits(buff,i,10)*P2_32;      i+=10; /* BGD E5a/E1 */
     eph_gal.tgd[1]=getbits(buff,i,10)*P2_32;      i+=10; /* BGD E5b/E1 */
-    e5b_hs     =getbitu(buff,i, 2);              i+= 2;
-    e1b_hs     =getbitu(buff,i, 2);              i+= 2;
-    e5b_dvs    =getbitu(buff,i, 1);              i+= 1;
+    e5b_hs      =getbitu(buff,i, 2);              i+= 2;
+    e1b_hs      =getbitu(buff,i, 2);              i+= 2;
+    e5b_dvs     =getbitu(buff,i, 1);              i+= 1;
     e1b_dvs     =getbitu(buff,i, 1);              i+= 1;
     week        =getbitu(buff,i,12);              i+=12; /* gst-week */
     tow         =getbitu(buff,i,20);
@@ -556,13 +556,13 @@ static int decode_bds_d1_eph(const uint8_t *buff, eph_t *eph)
     int i,frn1,frn2,frn3;
     
     i=8*38*0; /* subframe 1 */
-    frn1       =getbitu (buff,i+ 15, 3);
-    sow1       =getbitu2(buff,i+ 18, 8,i+30,12);
+    frn1          =getbitu (buff,i+ 15, 3);
+    sow1          =getbitu2(buff,i+ 18, 8,i+30,12);
     eph_bds.svh   =getbitu (buff,i+ 42, 1); /* SatH1 */
     eph_bds.iodc  =getbitu (buff,i+ 43, 5); /* AODC */
     eph_bds.sva   =getbitu (buff,i+ 48, 4);
     eph_bds.week  =getbitu (buff,i+ 60,13); /* week in BDT */
-    toc_bds    =getbitu2(buff,i+ 73, 9,i+ 90, 8)*8.0;
+    toc_bds       =getbitu2(buff,i+ 73, 9,i+ 90, 8)*8.0;
     eph_bds.tgd[0]=getbits (buff,i+ 98,10)*0.1*1E-9;
     eph_bds.tgd[1]=getbits2(buff,i+108, 4,i+120, 6)*0.1*1E-9;
     eph_bds.f2    =getbits (buff,i+214,11)*P2_66;
@@ -571,8 +571,8 @@ static int decode_bds_d1_eph(const uint8_t *buff, eph_t *eph)
     eph_bds.iode  =getbitu (buff,i+287, 5); /* AODE */
     
     i=8*38*1; /* subframe 2 */
-    frn2       =getbitu (buff,i+ 15, 3);
-    sow2       =getbitu2(buff,i+ 18, 8,i+30,12);
+    frn2          =getbitu (buff,i+ 15, 3);
+    sow2          =getbitu2(buff,i+ 18, 8,i+30,12);
     eph_bds.deln  =getbits2(buff,i+ 42,10,i+ 60, 6)*P2_43*SC2RAD;
     eph_bds.cuc   =getbits2(buff,i+ 66,16,i+ 90, 2)*P2_31;
     eph_bds.M0    =getbits2(buff,i+ 92,20,i+120,12)*P2_31*SC2RAD;
@@ -580,14 +580,14 @@ static int decode_bds_d1_eph(const uint8_t *buff, eph_t *eph)
     eph_bds.cus   =getbits (buff,i+180,18)*P2_31;
     eph_bds.crc   =getbits2(buff,i+198, 4,i+210,14)*P2_6;
     eph_bds.crs   =getbits2(buff,i+224, 8,i+240,10)*P2_6;
-    sqrtA      =getbitu2(buff,i+250,12,i+270,20)*P2_19;
-    toe1       =getbitu (buff,i+290, 2); /* TOE 2-MSB */
+    sqrtA         =getbitu2(buff,i+250,12,i+270,20)*P2_19;
+    toe1          =getbitu (buff,i+290, 2); /* TOE 2-MSB */
     eph_bds.A     =sqrtA*sqrtA;
     
     i=8*38*2; /* subframe 3 */
-    frn3       =getbitu (buff,i+ 15, 3);
-    sow3       =getbitu2(buff,i+ 18, 8,i+30,12);
-    toe2       =getbitu2(buff,i+ 42,10,i+ 60, 5); /* TOE 5-LSB */
+    frn3          =getbitu (buff,i+ 15, 3);
+    sow3          =getbitu2(buff,i+ 18, 8,i+30,12);
+    toe2          =getbitu2(buff,i+ 42,10,i+ 60, 5); /* TOE 5-LSB */
     eph_bds.i0    =getbits2(buff,i+ 65,17,i+ 90,15)*P2_31*SC2RAD;
     eph_bds.cic   =getbits2(buff,i+105, 7,i+120,11)*P2_31;
     eph_bds.OMGd  =getbits2(buff,i+131,11,i+150,13)*P2_43*SC2RAD;
@@ -703,74 +703,74 @@ static int decode_bds_d2_eph(const uint8_t *buff, eph_t *eph)
     trace(4,"decode_bds_d1_eph:\n");
     
     i=8*38*0; /* page 1 */
-    pgn1       =getbitu (buff,i+ 42, 4);
-    sow1       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    pgn1          =getbitu (buff,i+ 42, 4);
+    sow1          =getbitu2(buff,i+ 18, 8,i+ 30,12);
     eph_bds.svh   =getbitu (buff,i+ 46, 1); /* SatH1 */
     eph_bds.iodc  =getbitu (buff,i+ 47, 5); /* AODC */
     eph_bds.sva   =getbitu (buff,i+ 60, 4);
     eph_bds.week  =getbitu (buff,i+ 64,13); /* week in BDT */
-    toc_bds    =getbitu2(buff,i+ 77, 5,i+ 90,12)*8.0;
+    toc_bds       =getbitu2(buff,i+ 77, 5,i+ 90,12)*8.0;
     eph_bds.tgd[0]=getbits (buff,i+102,10)*0.1*1E-9;
     eph_bds.tgd[1]=getbits (buff,i+120,10)*0.1*1E-9;
     
     i=8*38*2; /* page 3 */
-    pgn3       =getbitu (buff,i+ 42, 4);
-    sow3       =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    pgn3          =getbitu (buff,i+ 42, 4);
+    sow3          =getbitu2(buff,i+ 18, 8,i+ 30,12);
     eph_bds.f0    =getbits2(buff,i+100,12,i+120,12)*P2_33;
-    f1p3       =getbits (buff,i+132,4);
+    f1p3          =getbits (buff,i+132,4);
     
     i=8*38*3; /* page 4 */
-    pgn4       =getbitu (buff,i+ 42, 4);
-    sow4       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    f1p4       =getbitu2(buff,i+ 46, 6,i+ 60,12);
+    pgn4          =getbitu (buff,i+ 42, 4);
+    sow4          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    f1p4          =getbitu2(buff,i+ 46, 6,i+ 60,12);
     eph_bds.f2    =getbits2(buff,i+ 72,10,i+ 90, 1)*P2_66;
     eph_bds.iode  =getbitu (buff,i+ 91, 5); /* AODE */
     eph_bds.deln  =getbits (buff,i+ 96,16)*P2_43*SC2RAD;
-    cucp4      =getbits (buff,i+120,14);
+    cucp4         =getbits (buff,i+120,14);
     
     i=8*38*4; /* page 5 */
-    pgn5       =getbitu (buff,i+ 42, 4);
-    sow5       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    cucp5      =getbitu (buff,i+ 46, 4);
+    pgn5          =getbitu (buff,i+ 42, 4);
+    sow5          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    cucp5         =getbitu (buff,i+ 46, 4);
     eph_bds.M0    =getbits3(buff,i+ 50, 2,i+ 60,22,i+ 90, 8)*P2_31*SC2RAD;
     eph_bds.cus   =getbits2(buff,i+ 98,14,i+120, 4)*P2_31;
-    ep5        =getbits (buff,i+124,10);
+    ep5           =getbits (buff,i+124,10);
     
     i=8*38*5; /* page 6 */
-    pgn6       =getbitu (buff,i+ 42, 4);
-    sow6       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    ep6        =getbitu2(buff,i+ 46, 6,i+ 60,16);
-    sqrtA      =getbitu3(buff,i+ 76, 6,i+ 90,22,i+120,4)*P2_19;
-    cicp6      =getbits (buff,i+124,10);
+    pgn6          =getbitu (buff,i+ 42, 4);
+    sow6          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    ep6           =getbitu2(buff,i+ 46, 6,i+ 60,16);
+    sqrtA         =getbitu3(buff,i+ 76, 6,i+ 90,22,i+120,4)*P2_19;
+    cicp6         =getbits (buff,i+124,10);
     eph_bds.A     =sqrtA*sqrtA;
     
     i=8*38*6; /* page 7 */
-    pgn7       =getbitu (buff,i+ 42, 4);
-    sow7       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    cicp7      =getbitu2(buff,i+ 46, 6,i+ 60, 2);
+    pgn7          =getbitu (buff,i+ 42, 4);
+    sow7          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    cicp7         =getbitu2(buff,i+ 46, 6,i+ 60, 2);
     eph_bds.cis   =getbits (buff,i+ 62,18)*P2_31;
     eph_bds.toes  =getbitu2(buff,i+ 80, 2,i+ 90,15)*8.0;
-    i0p7       =getbits2(buff,i+105, 7,i+120,14);
+    i0p7          =getbits2(buff,i+105, 7,i+120,14);
     
     i=8*38*7; /* page 8 */
-    pgn8       =getbitu (buff,i+ 42, 4);
-    sow8       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    i0p8       =getbitu2(buff,i+ 46, 6,i+ 60, 5);
+    pgn8          =getbitu (buff,i+ 42, 4);
+    sow8          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    i0p8          =getbitu2(buff,i+ 46, 6,i+ 60, 5);
     eph_bds.crc   =getbits2(buff,i+ 65,17,i+ 90, 1)*P2_6;
     eph_bds.crs   =getbits (buff,i+ 91,18)*P2_6;
-    OMGdp8     =getbits2(buff,i+109, 3,i+120,16);
+    OMGdp8        =getbits2(buff,i+109, 3,i+120,16);
     
     i=8*38*8; /* page 9 */
-    pgn9       =getbitu (buff,i+ 42, 4);
-    sow9       =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    OMGdp9     =getbitu (buff,i+ 46, 5);
+    pgn9          =getbitu (buff,i+ 42, 4);
+    sow9          =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    OMGdp9        =getbitu (buff,i+ 46, 5);
     eph_bds.OMG0  =getbits3(buff,i+ 51, 1,i+ 60,22,i+ 90, 9)*P2_31*SC2RAD;
-    omgp9      =getbits2(buff,i+ 99,13,i+120,14);
+    omgp9         =getbits2(buff,i+ 99,13,i+120,14);
     
     i=8*38*9; /* page 10 */
-    pgn10      =getbitu (buff,i+ 42, 4);
-    sow10      =getbitu2(buff,i+ 18, 8,i+ 30,12);
-    omgp10     =getbitu (buff,i+ 46, 5);
+    pgn10         =getbitu (buff,i+ 42, 4);
+    sow10         =getbitu2(buff,i+ 18, 8,i+ 30,12);
+    omgp10        =getbitu (buff,i+ 46, 5);
     eph_bds.idot  =getbits2(buff,i+ 51, 1,i+ 60,13)*P2_43*SC2RAD;
     
     /* check consistency of page numbers, sows and toe/toc */
@@ -857,10 +857,10 @@ extern int decode_bds_d2(const uint8_t *buff, eph_t *eph, double *utc)
 /* test hamming code of GLONASS navigation string ------------------------------
 * test hamming code of GLONASS navigation string (ref [2] 4.7)
 * args   : uint8_t *buff    I   GLONASS navigation string with hamming code
-*                                  buff[ 0]: string bit 85-78
-*                                  buff[ 1]: string bit 77-70
-*                                  ...
-*                                  buff[10]: string bit  5- 1 (0 padded)
+*                                 buff[ 0]: string bit 85-78
+*                                 buff[ 1]: string bit 77-70
+*                                 ...
+*                                 buff[10]: string bit  5- 1 (0 padded)
 * return : status (1:ok,0:error)
 *-----------------------------------------------------------------------------*/
 extern int test_glostr(const uint8_t *buff)
@@ -907,44 +907,44 @@ static int decode_glostr_eph(const uint8_t *buff, geph_t *geph)
     trace(4,"decode_glostr_eph:\n");
     
     /* frame 1 */
-    frn1        =getbitu(buff,i, 4);           i+= 4+2;
-    P1          =getbitu(buff,i, 2);           i+= 2;
-    tk_h        =getbitu(buff,i, 5);           i+= 5;
-    tk_m        =getbitu(buff,i, 6);           i+= 6;
-    tk_s        =getbitu(buff,i, 1)*30;        i+= 1;
+    frn1           =getbitu(buff,i, 4);           i+= 4+2;
+    P1             =getbitu(buff,i, 2);           i+= 2;
+    tk_h           =getbitu(buff,i, 5);           i+= 5;
+    tk_m           =getbitu(buff,i, 6);           i+= 6;
+    tk_s           =getbitu(buff,i, 1)*30;        i+= 1;
     geph_glo.vel[0]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
     geph_glo.acc[0]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
     geph_glo.pos[0]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
     
     /* frame 2 */
-    frn2        =getbitu(buff,i, 4);           i+= 4;
+    frn2           =getbitu(buff,i, 4);           i+= 4;
     geph_glo.svh   =getbitu(buff,i, 1);           i+= 1+2; /* MSB of Bn */
-    P2          =getbitu(buff,i, 1);           i+= 1;
-    tb          =getbitu(buff,i, 7);           i+= 7+5;
+    P2             =getbitu(buff,i, 1);           i+= 1;
+    tb             =getbitu(buff,i, 7);           i+= 7+5;
     geph_glo.vel[1]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
     geph_glo.acc[1]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
     geph_glo.pos[1]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
     
     /* frame 3 */
-    frn3        =getbitu(buff,i, 4);           i+= 4;
-    P3          =getbitu(buff,i, 1);           i+= 1;
+    frn3           =getbitu(buff,i, 4);           i+= 4;
+    P3             =getbitu(buff,i, 1);           i+= 1;
     geph_glo.gamn  =getbitg(buff,i,11)*P2_40;     i+=11+1;
-    P           =getbitu(buff,i, 2);           i+= 2;
-    ln          =getbitu(buff,i, 1);           i+= 1;
+    P              =getbitu(buff,i, 2);           i+= 2;
+    ln             =getbitu(buff,i, 1);           i+= 1;
     geph_glo.vel[2]=getbitg(buff,i,24)*P2_20*1E3; i+=24;
     geph_glo.acc[2]=getbitg(buff,i, 5)*P2_30*1E3; i+= 5;
     geph_glo.pos[2]=getbitg(buff,i,27)*P2_11*1E3; i+=27+4;
     
     /* frame 4 */
-    frn4        =getbitu(buff,i, 4);           i+= 4;
+    frn4           =getbitu(buff,i, 4);           i+= 4;
     geph_glo.taun  =getbitg(buff,i,22)*P2_30;     i+=22;
     geph_glo.dtaun =getbitg(buff,i, 5)*P2_30;     i+= 5;
     geph_glo.age   =getbitu(buff,i, 5);           i+= 5+14;
-    P4          =getbitu(buff,i, 1);           i+= 1;
+    P4             =getbitu(buff,i, 1);           i+= 1;
     geph_glo.sva   =getbitu(buff,i, 4);           i+= 4+3;
-    NT          =getbitu(buff,i,11);           i+=11;
-    slot        =getbitu(buff,i, 5);           i+= 5;
-    M           =getbitu(buff,i, 2);
+    NT             =getbitu(buff,i,11);           i+=11;
+    slot           =getbitu(buff,i, 5);           i+= 5;
+    M              =getbitu(buff,i, 2);
     
     if (frn1!=1||frn2!=2||frn3!=3||frn4!=4) {
         trace(3,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,
@@ -1022,15 +1022,15 @@ static int decode_frame_eph(const uint8_t *buff, eph_t *eph)
     i=240*0+24; /* subframe 1 */
     tow1        =getbitu(buff,i,17)*6.0;          i+=17+2;
     id1         =getbitu(buff,i, 3);              i+=3+2;
-    week       =getbitu(buff,i,10);       i+=10;
+    week        =getbitu(buff,i,10);              i+=10;
     eph_sat.code=getbitu(buff,i, 2);              i+= 2;
     eph_sat.sva =getbitu(buff,i, 4);              i+= 4; /* ura index */
     eph_sat.svh =getbitu(buff,i, 6);              i+= 6;
-    iodc0      =getbitu(buff,i, 2);       i+= 2;
+    iodc0       =getbitu(buff,i, 2);              i+= 2;
     eph_sat.flag=getbitu(buff,i, 1);              i+= 1+87;
-    tgd        =getbits(buff,i, 8);       i+= 8;
-    iodc1      =getbitu(buff,i, 8);       i+= 8;
-    toc        =getbitu(buff,i,16)*16.0;  i+=16;
+    tgd         =getbits(buff,i, 8);              i+= 8;
+    iodc1       =getbitu(buff,i, 8);              i+= 8;
+    toc         =getbitu(buff,i,16)*16.0;         i+=16;
     eph_sat.f2  =getbits(buff,i, 8)*P2_55;        i+= 8;
     eph_sat.f1  =getbits(buff,i,16)*P2_43;        i+=16;
     eph_sat.f0  =getbits(buff,i,22)*P2_31;
@@ -1045,7 +1045,7 @@ static int decode_frame_eph(const uint8_t *buff, eph_t *eph)
     eph_sat.cuc =getbits(buff,i,16)*P2_29;        i+=16;
     eph_sat.e   =getbitu(buff,i,32)*P2_33;        i+=32;
     eph_sat.cus =getbits(buff,i,16)*P2_29;        i+=16;
-    sqrtA    =getbitu(buff,i,32)*P2_19;        i+=32;
+    sqrtA       =getbitu(buff,i,32)*P2_19;        i+=32;
     eph_sat.toes=getbitu(buff,i,16)*16.0;         i+=16;
     eph_sat.fit =getbitu(buff,i, 1)?0.0:4.0; /* 0:4hr,1:>4hr */
     
@@ -1076,7 +1076,7 @@ static int decode_frame_eph(const uint8_t *buff, eph_t *eph)
         trace(3,"decode_frame_eph error: iode=%d %d iodc=%d\n",eph_sat.iode,
               iode,eph_sat.iodc);
         return 0;
-}
+    }
     eph_sat.week=adjgpsweek(week);
     eph_sat.ttr=gpst2time(eph_sat.week,tow1);
     if      (eph_sat.toes<tow1-302400.0) eph_sat.week++;
@@ -1092,7 +1092,7 @@ static void decode_alm_sat(const uint8_t *buff, int type, alm_t *alm)
     gtime_t toa0={0};
     double deltai,sqrtA,i_ref,e_ref;
     int i=50,f0;
-    
+
     trace(4,"decode_alm_sat:\n");
     
     /* type=0:GPS,1:QZS-QZO,2:QZS-GEO */
@@ -1125,7 +1125,7 @@ static int decode_alm_gps(const uint8_t *buff, int frm, alm_t *alm)
     
     if ((frm==5&&svid>=1&&svid<=24)||(frm==4&&svid>=25&&svid<=32)) {
         if (!(sat=satno(SYS_GPS,svid))) return 0;
-    alm[sat-1].sat =sat;
+        alm[sat-1].sat=sat;
         decode_alm_sat(buff,0,alm+sat);
         return 1;
     }
@@ -1161,7 +1161,7 @@ static int decode_alm_qzs(const uint8_t *buff, alm_t *alm)
     int i,j,sat,toas,week,svid=getbitu(buff,50,6);
     
     trace(4,"decode_alm_qzs:\n");
-        
+    
     if (svid>=1&&svid<=9) {
         if (!(sat=satno(SYS_QZS,192+svid))) return 0;
         alm[sat-1].sat=sat;
@@ -1169,13 +1169,13 @@ static int decode_alm_qzs(const uint8_t *buff, alm_t *alm)
         return 1;
     }
     else if (svid==51) {
-            i=56;
-            toas=getbitu(buff,i,8)*4096; i+=8;
-            week=getbitu(buff,i,8);      i+=8;
+        i=56;
+        toas=getbitu(buff,i,8)*4096; i+=8;
+        week=getbitu(buff,i,8);      i+=8;
         for (j=0;j<10;j++,i+=6) {
             if (!(sat=satno(SYS_QZS,193+j))) continue;
             alm[sat-1].svh=getbitu(buff,i,6);
-            }
+        }
         for (j=0;j<10;j++) {
             if (!(sat=satno(SYS_QZS,193+j))||alm[sat-1].sat!=sat||
                 alm[sat-1].toas!=toas) continue;
@@ -1199,37 +1199,37 @@ static int decode_frame_alm(const uint8_t *buff, alm_t *alm)
         
         if (dataid==1) { /* GPS */
             ret|=decode_alm_gps(buff,frm,alm);
-    }
+        }
         else if (dataid==3) { /* QZSS */
             ret|=decode_alm_qzs(buff,alm);
-            }
         }
-    return ret;
     }
+    return ret;
+}
 /* decode GPS/QZSS iono parameters -------------------------------------------*/
 static int decode_frame_ion(const uint8_t *buff, double *ion)
 {
     int i,frm;
     
     trace(4,"decode_frame_ion:\n");
-        
+    
     /* subframe 4/5 and svid=56 (page18) (wide area for QZSS) */
     for (frm=4,buff+=90;frm<=5;frm++,buff+=30) {
         if (frm==5&&getbitu(buff,48,2)==1) continue;
         if (getbitu(buff,43,3)!=frm||getbitu(buff,50,6)!=56) continue;
-            i=56;
-            ion[0]=getbits(buff,i, 8)*P2_30;     i+= 8;
-            ion[1]=getbits(buff,i, 8)*P2_27;     i+= 8;
-            ion[2]=getbits(buff,i, 8)*P2_24;     i+= 8;
-            ion[3]=getbits(buff,i, 8)*P2_24;     i+= 8;
+        i=56;
+        ion[0]=getbits(buff,i,8)*P2_30; i+=8;
+        ion[1]=getbits(buff,i,8)*P2_27; i+=8;
+        ion[2]=getbits(buff,i,8)*P2_24; i+=8;
+        ion[3]=getbits(buff,i,8)*P2_24; i+=8;
         ion[4]=getbits(buff,i,8)*P2P11; i+=8;
         ion[5]=getbits(buff,i,8)*P2P14; i+=8;
         ion[6]=getbits(buff,i,8)*P2P16; i+=8;
         ion[7]=getbits(buff,i,8)*P2P16;
         return 1;
-        }
-    return 0;
     }
+    return 0;
+}
 /* decode GPS/QZSS UTC parameters --------------------------------------------*/
 static int decode_frame_utc(const uint8_t *buff, double *utc)
 {
@@ -1253,7 +1253,7 @@ static int decode_frame_utc(const uint8_t *buff, double *utc)
         return 1;
     }
     return 0;
-    }
+}
 /* decode GPS/QZSS navigation data ---------------------------------------------
 * decode GPS/QZSS navigation data (ref [1],[4])
 * args   : uint8_t *buff    I   GPS/QZSS navigation data (w/o parity bits)
@@ -1289,8 +1289,8 @@ extern int decode_frame(const uint8_t *buff, eph_t *eph, alm_t *alm,
 /* initialize receiver raw data control ----------------------------------------
 * initialize receiver raw data control struct and reallocate observation and
 * epheris buffer
-* args   : raw_t  *raw   IO     receiver raw data control struct
-*          int    format I      stream format (STRFMT_???)
+* args   : raw_t *raw       IO  receiver raw data control struct
+*          int   format     I   stream format (STRFMT_???)
 * return : status (1:ok,0:memory allocation error)
 *-----------------------------------------------------------------------------*/
 extern int init_raw(raw_t *raw, int format)
@@ -1327,7 +1327,6 @@ extern int init_raw(raw_t *raw, int format)
     for (i=0;i<MAXRAWLEN;i++) raw->buff[i]=0;
     raw->opt[0]='\0';
     raw->format=-1;
-    raw->rcvtype=0;
     
     raw->obs.data =NULL;
     raw->obuf.data=NULL;
@@ -1380,7 +1379,7 @@ extern int init_raw(raw_t *raw, int format)
 }
 /* free receiver raw data control ----------------------------------------------
 * free observation and ephemeris buffer in receiver raw data control struct
-* args   : raw_t  *raw   IO     receiver raw data control struct
+* args   : raw_t  *raw      IO  receiver raw data control struct
 * return : none
 *-----------------------------------------------------------------------------*/
 extern void free_raw(raw_t *raw)
@@ -1402,8 +1401,8 @@ extern void free_raw(raw_t *raw)
 }
 /* input receiver raw data from stream -----------------------------------------
 * fetch next receiver raw data and input a message from stream
-* args   : raw_t  *raw   IO     receiver raw data control struct
-*          int    format I      receiver raw data format (STRFMT_???)
+* args   : raw_t  *raw      IO  receiver raw data control struct
+*          int    format    I   receiver raw data format (STRFMT_???)
 *          uint8_t data     I   stream data (1 byte)
 * return : status (-1: error message, 0: no message, 1: input observation data,
 *                  2: input ephemeris, 3: input sbas message,
@@ -1414,26 +1413,25 @@ extern int input_raw(raw_t *raw, int format, uint8_t data)
     trace(5,"input_raw: format=%d data=0x%02x\n",format,data);
     
     switch (format) {
-        case STRFMT_OEM4 : return input_oem4 (raw,data);
-        /* case STRFMT_CNAV : return input_cnav (raw,data); */
-        case STRFMT_UBX  : return input_ubx  (raw,data);
-        //case STRFMT_SBP  : return input_sbp  (raw,data);
-        case STRFMT_CRES : return input_cres (raw,data);
-        case STRFMT_STQ  : return input_stq  (raw,data);
-        case STRFMT_JAVAD: return input_javad(raw,data);
-        case STRFMT_NVS  : return input_nvs  (raw,data);
-        case STRFMT_BINEX: return input_bnx  (raw,data);
-        case STRFMT_RT17 : return input_rt17 (raw,data);
-        //case STRFMT_SEPT : return input_sbf  (raw,data);
-        /*case STRFMT_TERSUS: return input_tersus(raw,data);*/
+        case STRFMT_OEM4  : return input_oem4  (raw,data);
+        case STRFMT_OEM3  : return input_oem3  (raw,data);
+        case STRFMT_UBX   : return input_ubx   (raw,data);
+        case STRFMT_SS2   : return input_ss2   (raw,data);
+        case STRFMT_CRES  : return input_cres  (raw,data);
+        case STRFMT_STQ   : return input_stq   (raw,data);
+        case STRFMT_JAVAD : return input_javad (raw,data);
+        case STRFMT_NVS   : return input_nvs   (raw,data);
+        case STRFMT_BINEX : return input_bnx   (raw,data);
+        case STRFMT_RT17  : return input_rt17  (raw,data);
+        case STRFMT_SEPT  : return input_sbf   (raw,data);
     }
     return 0;
 }
 /* input receiver raw data from file -------------------------------------------
 * fetch next receiver raw data and input a message from file
-* args   : raw_t  *raw   IO     receiver raw data control struct
-*          int    format I      receiver raw data format (STRFMT_???)
-*          FILE   *fp    I      file pointer
+* args   : raw_t  *raw      IO  receiver raw data control struct
+*          int    format    I   receiver raw data format (STRFMT_???)
+*          FILE   *fp       I   file pointer
 * return : status(-2: end of file/format error, -1...31: same as above)
 *-----------------------------------------------------------------------------*/
 extern int input_rawf(raw_t *raw, int format, FILE *fp)
@@ -1441,18 +1439,17 @@ extern int input_rawf(raw_t *raw, int format, FILE *fp)
     trace(4,"input_rawf: format=%d\n",format);
     
     switch (format) {
-        case STRFMT_OEM4 : return input_oem4f (raw,fp);
-        /* case STRFMT_CNAV : return input_cnavf (raw,fp); */
-        case STRFMT_UBX  : return input_ubxf  (raw,fp);
-        //case STRFMT_SBP  : return input_sbpf  (raw,fp);
-        case STRFMT_CRES : return input_cresf (raw,fp);
-        case STRFMT_STQ  : return input_stqf  (raw,fp);
-        case STRFMT_JAVAD: return input_javadf(raw,fp);
-        case STRFMT_NVS  : return input_nvsf  (raw,fp);
-        case STRFMT_BINEX: return input_bnxf  (raw,fp);
-        case STRFMT_RT17 : return input_rt17f (raw,fp);
-        //case STRFMT_SEPT : return input_sbff  (raw,fp);
-        /*case STRFMT_TERSUS: return input_tersusf(raw,fp); */
+        case STRFMT_OEM4  : return input_oem4f  (raw,fp);
+        case STRFMT_OEM3  : return input_oem3f  (raw,fp);
+        case STRFMT_UBX   : return input_ubxf   (raw,fp);
+        case STRFMT_SS2   : return input_ss2f   (raw,fp);
+        case STRFMT_CRES  : return input_cresf  (raw,fp);
+        case STRFMT_STQ   : return input_stqf   (raw,fp);
+        case STRFMT_JAVAD : return input_javadf (raw,fp);
+        case STRFMT_NVS   : return input_nvsf   (raw,fp);
+        case STRFMT_BINEX : return input_bnxf   (raw,fp);
+        case STRFMT_RT17  : return input_rt17f  (raw,fp);
+        case STRFMT_SEPT  : return input_sbff   (raw,fp);
     }
     return -2;
 }

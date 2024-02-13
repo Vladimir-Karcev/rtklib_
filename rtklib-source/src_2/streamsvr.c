@@ -518,9 +518,9 @@ static void *strsvrthread(void *arg)
         }
         for (i=1;i<svr->nstr;i++) {
             
-            /* read message from output stream if connected */
-            while (strstat(svr->stream+i,NULL)>=2 &&
-                  (n=strread(svr->stream+i,buff,sizeof(buff)))>0) {
+            /* read message from output stream */
+            while ((n=strread(svr->stream+i,buff,sizeof(buff)))>0) {
+                
                 /* relay back message from output stream to input stream */
                 if (i==svr->relayback) {
                     strwrite(svr->stream,buff,n);
@@ -536,7 +536,6 @@ static void *strsvrthread(void *arg)
         /* write nmea messages to input stream */
         if (svr->nmeacycle>0&&(int)(tick-tick_nmea)>=svr->nmeacycle) {
             sol_nmea.stat=SOLQ_SINGLE;
-            sol_nmea.ns=10; /* Some servers don't like when ns = 0 */
             sol_nmea.time=utc2gpst(timeget());
             matcpy(sol_nmea.rr,svr->nmeapos,3,1);
             strsendnmea(svr->stream,&sol_nmea);

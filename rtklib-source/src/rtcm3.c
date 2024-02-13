@@ -66,7 +66,7 @@
 
 /* type definition -----------------------------------------------------------*/
 
-typedef struct {              /* multi-signal-message header type */
+typedef struct {                    /* multi-signal-message header type */
     uint8_t iod;              /* issue of data station */
     uint8_t time_s;           /* cumulative session transmitting time */
     uint8_t clk_str;          /* clock steering indicator */
@@ -112,9 +112,9 @@ const char *msm_sig_sbs[32]={
 };
 const char *msm_sig_cmp[32]={
     /* BeiDou: ref [17] table 3.5-108 */
-    ""  ,"2I","2Q","2X",""  ,""  ,""  ,"6I","6Q","6X",""  ,""  ,
-    ""  ,"7I","7Q","7X",""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,
-    ""  ,""  ,""  ,""  ,""  ,""  ,""  ,""
+    ""  ,"2I","2Q","2X","","",""  ,"6I","6Q","6X",""  ,""  ,
+    ""  ,"7I","7Q","7X",""  ,""  ,""  ,""  ,""  ,"5D"  ,"5P"  ,"5X"  ,
+    "7D"  ,""  ,""  ,""  ,""  ,"1D"  ,"1P"  ,"1X"
 };
 const char *msm_sig_irn[32]={
     /* NavIC/IRNSS: ref [17] table 3.5-108.3 */
@@ -306,7 +306,7 @@ static int decode_type1001(rtcm_t *rtcm)
 /* decode type 1002: extended L1-only GPS RTK observables --------------------*/
 static int decode_type1002(rtcm_t *rtcm)
 {
-    double pr1,cnr1,tt,cp1,freq=FREQ1;
+    double pr1,cnr1,tt,cp1,freq=FREQL1;
     int i=24+64,j,index,nsat,sync,prn,code,sat,ppr1,lock1,amb,sys;
     
     if ((nsat=decode_head1001(rtcm,&sync))<0) return -1;
@@ -359,7 +359,7 @@ static int decode_type1003(rtcm_t *rtcm)
 static int decode_type1004(rtcm_t *rtcm)
 {
     const int L2codes[]={CODE_L2X,CODE_L2P,CODE_L2D,CODE_L2W};
-    double pr1,cnr1,cnr2,tt,cp1,cp2,freq[2]={FREQ1,FREQ2};
+    double pr1,cnr1,cnr2,tt,cp1,cp2,freq[2]={FREQL1,FREQL2};
     int i=24+64,j,index,nsat,sync,prn,sat,code1,code2,pr21,ppr1,ppr2;
     int lock1,lock2,amb,sys;
     
@@ -1437,15 +1437,15 @@ static int decode_ssr_epoch(rtcm_t *rtcm, int sys, int subtype)
     int i=24+12;
     
     if (subtype==0) { /* RTCM SSR */
-        
-        if (sys==SYS_GLO) {
-            tod=getbitu(rtcm->buff,i,17); i+=17;
-            adjday_glot(rtcm,tod);
-        }
-        else {
-            tow=getbitu(rtcm->buff,i,20); i+=20;
-            adjweek(rtcm,tow);
-        }
+    
+    if (sys==SYS_GLO) {
+        tod=getbitu(rtcm->buff,i,17); i+=17;
+        adjday_glot(rtcm,tod);
+    }
+    else {
+        tow=getbitu(rtcm->buff,i,20); i+=20;
+        adjweek(rtcm,tow);
+    }
     }
     else { /* IGS SSR */
         i+=3+8;
@@ -1473,7 +1473,7 @@ static int decode_ssr1_head(rtcm_t *rtcm, int sys, int subtype, int *sync,
     udi   =getbitu(rtcm->buff,i, 4); i+= 4;
     *sync =getbitu(rtcm->buff,i, 1); i+= 1;
     if (subtype==0) { /* RTCM SSR */
-        *refd=getbitu(rtcm->buff,i,1); i+=1; /* satellite ref datum */
+    *refd =getbitu(rtcm->buff,i, 1); i+= 1; /* satellite ref datum */
     }
     *iod  =getbitu(rtcm->buff,i, 4); i+= 4; /* IOD SSR */
     provid=getbitu(rtcm->buff,i,16); i+=16; /* provider ID */
@@ -1918,7 +1918,7 @@ static int decode_ssr7(rtcm_t *rtcm, int sys, int subtype)
             sdc =getbitu(rtcm->buff,i, 4); i+= 4; /* discontinuity counter */
             bias=getbits(rtcm->buff,i,20); i+=20; /* phase bias (m) */
             if (subtype==0) {
-                std=getbitu(rtcm->buff,i,17); i+=17; /* phase bias std-dev (m) */
+            std =getbitu(rtcm->buff,i,17); i+=17; /* phase bias std-dev (m) */
             }
             if (sigs[mode]) {
                 pbias[sigs[mode]-1]=bias*0.0001; /* (m) */
@@ -2088,7 +2088,7 @@ static void save_msm_obs(rtcm_t *rtcm, int sys, msm_h_t *h, const double *r,
                         (float)(-(rr[i]+rrf[j])*freq/CLIGHT);
                 }
                 rtcm->obs.data[index].LLI[idx[k]]=
-                    lossoflock(rtcm,sat,idx[k],lock[j])+(half[j]?3:0);
+                    lossoflock(rtcm,sat,idx[k],lock[j])+(half[j]?2:0);
                 rtcm->obs.data[index].SNR [idx[k]]=(uint16_t)(cnr[j]/SNR_UNIT+0.5);
                 rtcm->obs.data[index].code[idx[k]]=code[k];
             }
@@ -2199,7 +2199,8 @@ static int decode_msm4(rtcm_t *rtcm, int sys)
     if (i+h.nsat*18+ncell*48>rtcm->len*8) {
         trace(2,"rtcm3 %d length error: nsat=%d ncell=%d len=%d\n",type,h.nsat,
               ncell,rtcm->len);
-        return -1;
+        rtcm->obsflag=!sync;  /* header ok, so return sync bit */
+        return sync?0:1;
     }
     for (j=0;j<h.nsat;j++) r[j]=0.0;
     for (j=0;j<ncell;j++) pr[j]=cp[j]=-1E16;
@@ -2253,7 +2254,8 @@ static int decode_msm5(rtcm_t *rtcm, int sys)
     if (i+h.nsat*36+ncell*63>rtcm->len*8) {
         trace(2,"rtcm3 %d length error: nsat=%d ncell=%d len=%d\n",type,h.nsat,
               ncell,rtcm->len);
-        return -1;
+        rtcm->obsflag=!sync;  /* header ok, so return sync bit */
+        return sync?0:1;
     }
     for (j=0;j<h.nsat;j++) {
         r[j]=rr[j]=0.0; ex[j]=15;
@@ -2319,7 +2321,8 @@ static int decode_msm6(rtcm_t *rtcm, int sys)
     if (i+h.nsat*18+ncell*65>rtcm->len*8) {
         trace(2,"rtcm3 %d length error: nsat=%d ncell=%d len=%d\n",type,h.nsat,
               ncell,rtcm->len);
-        return -1;
+        rtcm->obsflag=!sync;  /* header ok, so return sync bit */
+        return sync?0:1;
     }
     for (j=0;j<h.nsat;j++) r[j]=0.0;
     for (j=0;j<ncell;j++) pr[j]=cp[j]=-1E16;
@@ -2373,7 +2376,8 @@ static int decode_msm7(rtcm_t *rtcm, int sys)
     if (i+h.nsat*36+ncell*80>rtcm->len*8) {
         trace(2,"rtcm3 %d length error: nsat=%d ncell=%d len=%d\n",type,h.nsat,
               ncell,rtcm->len);
-        return -1;
+        rtcm->obsflag=!sync;  /* header ok, so return sync bit */
+        return sync?0:1;
     }
     for (j=0;j<h.nsat;j++) {
         r[j]=rr[j]=0.0; ex[j]=15;
@@ -2394,7 +2398,10 @@ static int decode_msm7(rtcm_t *rtcm, int sys)
     }
     for (j=0;j<h.nsat;j++) { /* phaserangerate */
         rate =getbits(rtcm->buff,i,14); i+=14;
-        if (rate!=-8192) rr[j]=rate*1.0;
+        if (rate!=-8192) {
+            rr[j]=rate*1.0;
+            if (strstr(rtcm->opt,"-INVPRR")) rr[j] = -rr[j];
+        }
     }
     /* decode signal data */
     for (j=0;j<ncell;j++) { /* pseudorange */
@@ -2416,7 +2423,10 @@ static int decode_msm7(rtcm_t *rtcm, int sys)
     }
     for (j=0;j<ncell;j++) { /* phaserangerate */
         rrv=getbits(rtcm->buff,i,15); i+=15;
-        if (rrv!=-16384) rrf[j]=rrv*0.0001;
+        if (rrv!=-16384) {
+            rrf[j]=rrv*0.0001;
+            if (strstr(rtcm->opt,"-INVPRR")) rrf[j] = -rrf[j];
+        }
     }
     /* save obs data in msm message */
     save_msm_obs(rtcm,sys,&h,r,pr,cp,rr,rrf,cnr,lock,ex,half);

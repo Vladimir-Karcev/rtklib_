@@ -109,7 +109,7 @@ static int decode_ss2meas(raw_t *raw)
     /* time slew defined as uchar (ref [1]) but minus value appears in some f/w */
     slew=*(char *)(p)*tslew;
     
-    raw->icpc+=4.5803-freqif*slew-FREQ1*(slew-1E-6); /* phase correction */
+    raw->icpc+=4.5803-freqif*slew-FREQL1*(slew-1E-6); /* phase correction */
     
     for (i=n=0,p+=11;i<nobs&&n<MAXOBS;i++,p+=11) {
         prn=(p[0]&0x1F)+1;

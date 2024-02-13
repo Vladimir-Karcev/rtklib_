@@ -114,7 +114,7 @@ static double locktime_d(gtime_t time, gtime_t *lltime, uint8_t LLI)
 static int fcn_glo(int sat, rtcm_t *rtcm)
 {
     int prn;
-    
+
     if (satsys(sat,&prn)!=SYS_GLO) {
         return -1;
     }
@@ -123,7 +123,7 @@ static int fcn_glo(int sat, rtcm_t *rtcm)
     }
     if (rtcm->nav.glo_fcn[prn-1]>0) { /* fcn+8 (0: no data) */
         return rtcm->nav.glo_fcn[prn-1]-8+7;
-    }
+}
     return -1;
 }
 /* lock time indicator (ref [17] table 3.4-2) --------------------------------*/
@@ -246,8 +246,8 @@ static void gen_obs_gps(rtcm_t *rtcm, const obsd_t *data, int *code1, int *pr1,
     double lam1,lam2,pr1c=0.0,ppr;
     int lt1,lt2;
     
-    lam1=CLIGHT/FREQ1;
-    lam2=CLIGHT/FREQ2;
+    lam1=CLIGHT/FREQL1;
+    lam2=CLIGHT/FREQL2;
     *pr1=*amb=0;
     if (ppr1) *ppr1=0xFFF80000; /* invalid values */
     if (pr21) *pr21=0xFFFFE000;
@@ -572,7 +572,7 @@ static int encode_type1006(rtcm_t *rtcm, int sync)
 static int encode_type1007(rtcm_t *rtcm, int sync)
 {
     int i=24,j,antsetup=rtcm->sta.antsetup;
-    int n=MIN(strlen(rtcm->sta.antdes),31);
+    int n=MIN((int)strlen(rtcm->sta.antdes),31);
     
     trace(3,"encode_type1007: sync=%d\n",sync);
     
@@ -592,8 +592,8 @@ static int encode_type1007(rtcm_t *rtcm, int sync)
 static int encode_type1008(rtcm_t *rtcm, int sync)
 {
     int i=24,j,antsetup=rtcm->sta.antsetup;
-    int n=MIN(strlen(rtcm->sta.antdes),31);
-    int m=MIN(strlen(rtcm->sta.antsno),31);
+    int n=MIN((int)strlen(rtcm->sta.antdes),31);
+    int m=MIN((int)strlen(rtcm->sta.antsno),31);
     
     trace(3,"encode_type1008: sync=%d\n",sync);
     
@@ -925,11 +925,11 @@ static int encode_type1020(rtcm_t *rtcm, int sync)
 static int encode_type1033(rtcm_t *rtcm, int sync)
 {
     int i=24,j,antsetup=rtcm->sta.antsetup;
-    int n=MIN(strlen(rtcm->sta.antdes ),31);
-    int m=MIN(strlen(rtcm->sta.antsno ),31);
-    int I=MIN(strlen(rtcm->sta.rectype),31);
-    int J=MIN(strlen(rtcm->sta.recver ),31);
-    int K=MIN(strlen(rtcm->sta.recsno ),31);
+    int n=MIN((int)strlen(rtcm->sta.antdes ),31);
+    int m=MIN((int)strlen(rtcm->sta.antsno ),31);
+    int I=MIN((int)strlen(rtcm->sta.rectype),31);
+    int J=MIN((int)strlen(rtcm->sta.recver ),31);
+    int K=MIN((int)strlen(rtcm->sta.recsno ),31);
     
     trace(3,"encode_type1033: sync=%d\n",sync);
     
@@ -1391,27 +1391,27 @@ static int encode_ssr_head(int type, rtcm_t *rtcm, int sys, int subtype,
     
     if (subtype==0) { /* RTCM SSR */
         ns=(sys==SYS_QZS)?4:6;
-        switch (sys) {
-            case SYS_GPS: msgno=(type==7)?11:1056+type; break;
-            case SYS_GLO: msgno=(type==7)? 0:1062+type; break;
+    switch (sys) {
+        case SYS_GPS: msgno=(type==7)?11:1056+type; break;
+        case SYS_GLO: msgno=(type==7)? 0:1062+type; break;
             case SYS_GAL: msgno=(type==7)?12:1239+type; break; /* draft */
             case SYS_QZS: msgno=(type==7)?13:1245+type; break; /* draft */
             case SYS_CMP: msgno=(type==7)?14:1257+type; break; /* draft */
             case SYS_SBS: msgno=(type==7)? 0:1251+type; break; /* draft */
-            default: return 0;
-        }
-        if (msgno==0) {
-            return 0;
-        }
+        default: return 0;
+    }
+    if (msgno==0) {
+        return 0;
+    }
         setbitu(rtcm->buff,i,12,msgno); i+=12; /* message type */
-        
-        if (sys==SYS_GLO) {
-            tow=time2gpst(timeadd(gpst2utc(rtcm->time),10800.0),&week);
+    
+    if (sys==SYS_GLO) {
+        tow=time2gpst(timeadd(gpst2utc(rtcm->time),10800.0),&week);
             epoch=ROUND(tow)%86400;
             setbitu(rtcm->buff,i,17,epoch); i+=17; /* GLONASS epoch time */
-        }
-        else {
-            tow=time2gpst(rtcm->time,&week);
+    }
+    else {
+        tow=time2gpst(rtcm->time,&week);
             epoch=ROUND(tow)%604800;
             setbitu(rtcm->buff,i,20,epoch); i+=20; /* GPS epoch time */
         }
@@ -1443,7 +1443,7 @@ static int encode_ssr_head(int type, rtcm_t *rtcm, int sys, int subtype,
         setbitu(rtcm->buff,i,1,0); i+=1; /* dispersive bias consistency ind */
         setbitu(rtcm->buff,i,1,0); i+=1; /* MW consistency indicator */
     }
-    setbitu(rtcm->buff,i,ns,nsat); i+=ns; /* no of satellites */
+    setbitu(rtcm->buff,i,ns,nsat   ); i+=ns; /* no of satellites */
     return i;
 }
 /* SSR signal and tracking mode IDs ------------------------------------------*/

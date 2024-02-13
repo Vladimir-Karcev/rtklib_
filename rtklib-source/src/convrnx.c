@@ -37,7 +37,7 @@
 *                           delete scanobs in RINEX options (rnxopt_t)
 *                           add phase shift option (phshift) in rnxopt_t
 *                           sort obs-types by freq-index and code priority
-*                           add test obs-types supportted by RINEX versions
+*                           add test obs-types supported by RINEX versions
 *                           support receiver/antenna info in raw data
 *                           fix bug on writing BDS/IRN nav header in closefile()
 *                           fix bug on screening time in screent_ttol()
@@ -73,7 +73,7 @@ typedef struct halfc_tag {      /* half-cycle ambiguity list type */
 typedef struct {                /* stream file type */
     int format;                 /* stream format (STRFMT_???) */
     int staid;                  /* station ID */
-    int ephsat,ephset;          /* satelite and set of input ephemeris */
+    int ephsat,ephset;          /* satellite and set of input ephemeris */
     gtime_t time;               /* current time */
     gtime_t tstart;             /* start time */
     obs_t  *obs;                /* pointer to input observation data */
@@ -342,6 +342,9 @@ static void setopt_file(int format, char **paths, int n, const int *mask,
         if (!mask[j]) continue;
         sprintf(opt->comment[i++],"log: %.58s",paths[j]);
     }
+    if (*opt->rcvopt) {
+        sprintf(opt->comment[i++], "options: %.54s", opt->rcvopt);
+    }
 }
 /* unset RINEX options comments ----------------------------------------------*/
 static void unsetopt_file(rnxopt_t *opt)
@@ -519,7 +522,7 @@ static void setopt_sta(const strfile_t *str, rnxopt_t *opt)
         if (!p->next) break;
         if (opt->ts.time&&timediff(p->next->te,opt->ts)<0.0) break;
     }
-    if (p) {
+    if (p&&p->sta.name[0]!='\0') {
         sta=&p->sta;
         setopt_sta_list(str,opt);
     }
@@ -639,30 +642,35 @@ static void update_halfc(strfile_t *str, obsd_t *obs)
     
     for (i=0;i<NFREQ+NEXOBS;i++) {
         if (obs->L[i]==0.0) continue;
-        
+
+        /* if no list, start list */
         if (!str->halfc[sat-1][i]) {
             if (!add_halfc(str,sat,i,obs->time)) continue;
         }
-        if (obs->LLI[i]&LLI_SLIP) {
+        /* reset list if true cycle slip */
+        if ((obs->LLI[i]&LLI_SLIP)&&!(obs->LLI[i]&(LLI_HALFA|LLI_HALFS))) {
             str->halfc[sat-1][i]->stat=0;
         }
-        if (obs->LLI[i]&LLI_HALFC) { /* halfcyc unknown */
+        if (obs->LLI[i]&LLI_HALFC) { /* halfcyc unresolved */
+            /* if new list, set unresolved start epoch */
             if (str->halfc[sat-1][i]->stat==0) {
                 str->halfc[sat-1][i]->ts=obs->time;
             }
+            /* update unresolved end epoch and set status to active */
             str->halfc[sat-1][i]->te=obs->time;
-            str->halfc[sat-1][i]->stat=1; /* unresolved */
-        }
-        else if (str->halfc[sat-1][i]->stat==1) { /* halfcyc unknown -> known */
+            str->halfc[sat-1][i]->stat=1;
+        } /* else if resolved, update status */
+        else if (str->halfc[sat-1][i]->stat==1) {
             if (obs->LLI[i]&LLI_HALFA) {
-                str->halfc[sat-1][i]->stat=2; /* resolved with added */
+                str->halfc[sat-1][i]->stat=2; /* resolved with add */
             }
             else if (obs->LLI[i]&LLI_HALFS) {
-                str->halfc[sat-1][i]->stat=3; /* resolved with subtracted */
+                str->halfc[sat-1][i]->stat=3; /* resolved with subtract */
             }
             else {
-                str->halfc[sat-1][i]->stat=4; /* resolved with none */
+                str->halfc[sat-1][i]->stat=4; /* resolved with no adjust */
             }
+            /* create new list entry */
             if (!add_halfc(str,sat,i,obs->time)) continue;
         }
     }
@@ -699,14 +707,14 @@ static void resolve_halfc(const strfile_t *str, obsd_t *data, int n)
         sat=data[i].sat;
         
         for (p=str->halfc[sat-1][j];p;p=p->next) {
-            if (p->stat<=1) continue;
+            if (p->stat<=1) continue;  /* unresolved half cycle */
             if (timediff(data[i].time,p->ts)<-DTTOL||
                 timediff(data[i].time,p->te)> DTTOL) continue;
-            
-            if (p->stat==3) {
+
+            if (p->stat==2) {    /* add half cycle */
                 data[i].L[j]+=0.5;
             }
-            else if (p->stat==4) {
+            else if (p->stat==3) {  /* subtract half cycle  */
                 data[i].L[j]-=0.5;
             }
             data[i].LLI[j]&=~LLI_HALFC;
@@ -1027,14 +1035,19 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
         resolve_halfc(str,str->obs->data,str->obs->n);
     }
     /* output RINEX observation data */
-    outrnxobsb(ofp[0],opt,str->obs->data,str->obs->n,0);
+    outrnxobsb(ofp[0],opt,str->obs->data,str->obs->n,str->obs->flag);
+    /* n[NOUTFILE+1] - count of events converted to rinex */
+    if (str->obs->flag == 5)
+       n[NOUTFILE+1]++;
+    /* set to zero flag for the next iteration (initialization) */
+    str->obs->flag = 0;
     
     if (opt->tstart.time==0) opt->tstart=time;
     opt->tend=time;
     
     n[0]++;
 }
-/* convert navigattion data --------------------------------------------------*/
+/* convert navigation data --------------------------------------------------*/
 static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
 {
     gtime_t ts;
@@ -1060,7 +1073,7 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     ts=opt->ts;
     if (ts.time!=0) ts=timeadd(ts,-dtoe);
     if (!screent(str->time,ts,opt->te,0.0)) return;
-    
+
     if (sys==SYS_GPS) {
         if (ofp[1]) {
             outrnxnavb(ofp[1],opt,str->nav->eph+sat-1+MAXSAT*set);
@@ -1197,7 +1210,7 @@ static void setopt_apppos(strfile_t *str, rnxopt_t *opt)
 /* show conversion status ----------------------------------------------------*/
 static int showstat(int sess, gtime_t ts, gtime_t te, int *n)
 {
-    const char type[]="ONGHQLCISE";
+    const char type[]="ONGHQLCISET";
     char msg[1024]="",*p=msg,s[64];
     int i;
     
@@ -1214,9 +1227,10 @@ static int showstat(int sess, gtime_t ts, gtime_t te, int *n)
     }
     p+=sprintf(p,": ");
     
-    for (i=0;i<NOUTFILE+1;i++) {
+    /* +2 to NOUTFILE for counters of errors and events */
+    for (i=0;i<NOUTFILE+2;i++) {
         if (n[i]==0) continue;
-        p+=sprintf(p,"%c=%d%s",type[i],n[i],i<NOUTFILE?" ":"");
+        p+=sprintf(p,"%c=%d%s",type[i],n[i],i<NOUTFILE+1?" ":"");
     }
     return showmsg(msg);
 }
@@ -1227,7 +1241,7 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
     FILE *ofp[NOUTFILE]={NULL};
     strfile_t *str;
     gtime_t tend[3]={{0}};
-    int i,j,nf,type,n[NOUTFILE+1]={0},mask[MAXEXFILE]={0},staid=-1,abort=0;
+    int i,j,nf,type,n[NOUTFILE+2]={0},mask[MAXEXFILE]={0},staid=-1,abort=0;
     char path[1024],*paths[NOUTFILE],s[NOUTFILE][1024];
     char *epath[MAXEXFILE]={0},*staname=*opt->staid?opt->staid:"0000";
     
@@ -1298,13 +1312,11 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         
         /* open stream file */
         if (!open_strfile(str,epath[i])) continue;
-        
+
         /* input message */
         for (j=0;(type=input_strfile(str))>=-1;j++) {
             
             if (!(j%11)&&(abort=showstat(sess,str->time,str->time,n))) break;
-            
-            if (opt->ts.time&&timediff(str->time,opt->ts)<-opt->ttol) continue;
             if (opt->te.time&&timediff(str->time,opt->te)>-opt->ttol) break;
             
             /* convert message */
