@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="pos_data">
+      <UniqueIdentifier>{95587bef-f3b9-41ac-b71e-d403593a665d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{ebf55fe6-bc6b-44ce-a306-2b58be9df044}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gnss_data">
+      <UniqueIdentifier>{cc9fc444-c3ab-4c32-bd9f-479086e1a0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack">
+      <UniqueIdentifier>{ef745780-fb65-4956-b614-cbd256379f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack\blas">
+      <UniqueIdentifier>{3e90c8a4-6e59-424f-9fab-c11492383d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack\include">
+      <UniqueIdentifier>{9c7ca187-20ac-4ff0-86e5-744c8bb64065}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack\install">
+      <UniqueIdentifier>{f4661a9d-ada2-4d12-abda-62cd7cd5b205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack\libf2c">
+      <UniqueIdentifier>{40b0f88c-d500-4da6-b2a7-92ec4f2f23bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\lapack\src">
+      <UniqueIdentifier>{e1846114-32d8-4f62-abe4-c0aea1d973c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src">
+      <UniqueIdentifier>{9cd28656-8f53-4632-8bcb-da27eefc6d2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\rcv">
+      <UniqueIdentifier>{9541cefc-8ac9-41a5-b503-beda34747c92}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rtk_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dasum.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\daxpy.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dcopy.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\ddot.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dgemm.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dgemv.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dger.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dnrm2.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dscal.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dswap.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dsymm.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dsymv.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dsyrk.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dtrmm.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dtrmv.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dtrsm.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dtrsv.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\idamax.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\xerbla.c">
+      <Filter>Source Files\lapack\blas</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\install\dlamch.c">
+      <Filter>Source Files\lapack\install</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\install\lsame.c">
+      <Filter>Source Files\lapack\install</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\d_lg10.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\d_sign.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\i_dnnt.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\i_nint.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_cat.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_cmp.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_copy.c">
+      <Filter>Source Files\lapack\libf2c</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\convgpx.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\convkml.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\convrnx.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\datum.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\download.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\ephemeris.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\geoid.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\gis.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\ionex.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\lambda.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\options.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\pntpos.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\postpos.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\ppp.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\ppp_ar.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\preceph.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcvraw.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rinex.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtcm.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtcm2.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtcm3.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtcm3e.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtkcmn.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtkpos.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rtksvr.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\sbas.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\solution.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\stream.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\streamsvr.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\tides.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\tle.c">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dgetf2.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dgetrf.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dgetrs.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\disnan.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlabad.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlacn2.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlacpy.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlaisnan.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlansy.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlaqsy.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlaset.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlassq.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlaswp.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlatrs.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlauu2.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dlauum.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpocon.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpoequ.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dporfs.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dposv.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dposvx.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpotf2.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpotrf.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpotri.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dpotrs.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\drscl.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dtrti2.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dtrtri.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dtrtrs.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\ieeeck.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\ilaenv.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\iparmq.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\src\dgetri.c">
+      <Filter>Source Files\lapack\src</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\binex.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\crescent.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\javad.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\novatel.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\nvs.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\rt17.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\septentrio.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\skytraq.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\ss2.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\src\rcv\ublox.c">
+      <Filter>Source Files\src\rcv</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PosData.hpp">
+      <Filter>pos_data</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="gnss_data.hpp">
+      <Filter>gnss_data</Filter>
+    </ClInclude>
+    <ClInclude Include="rtklib-source\lapack\include\blaswrap.h">
+      <Filter>Source Files\lapack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="rtklib-source\lapack\include\clapack.h">
+      <Filter>Source Files\lapack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="rtklib-source\lapack\include\f2c.h">
+      <Filter>Source Files\lapack\include</Filter>
+    </ClInclude>
+    <ClInclude Include="rtklib-source\src\_rtklib.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="rtklib-source\src\rtklib.h">
+      <Filter>Source Files\src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

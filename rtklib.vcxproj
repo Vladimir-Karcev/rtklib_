@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="my_release|Win32">
+      <Configuration>my_release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="my_release|x64">
+      <Configuration>my_release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{f5f09354-81a7-46ba-8592-28ff6cb70339}</ProjectGuid>
+    <RootNamespace>rtklib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='my_release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='my_release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='my_release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='my_release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='my_release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)\rtklib-source\src\rcv;$(ProjectDir)\rtklib-source\src;$(ProjectDir)\rtklib-source\lapack\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='my_release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\VoWayne\haltura\rtklib\rtklib-source\src\rcv;D:\VoWayne\haltura\rtklib\rtklib-source\src;D:\VoWayne\haltura\rtklib\rtklib-source\lapack\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)\rtklib-source\src\rcv;$(ProjectDir)\rtklib-source\src;$(ProjectDir)\rtklib-source\lapack\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='my_release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ENAGLO;ENAGAL;ENAQZS;ENACMP;WIN32;LAPACK;DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>8388608</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='my_release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ENAGLO;ENAGAL;ENAQZS;ENACMP;WIN32;DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ENAGLO;ENAGAL;ENAQZS;ENACMP;WIN32;LAPACK;DLL</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='my_release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="rtklib-source\lapack\blas\dasum.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\daxpy.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dcopy.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\ddot.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dgemm.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dgemv.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dger.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dnrm2.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dscal.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dswap.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dsymm.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dsymv.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dsyrk.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dtrmm.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dtrmv.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dtrsm.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\dtrsv.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\idamax.c" />
+    <ClCompile Include="rtklib-source\lapack\blas\xerbla.c" />
+    <ClCompile Include="rtklib-source\lapack\install\dlamch.c" />
+    <ClCompile Include="rtklib-source\lapack\install\lsame.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\d_lg10.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\d_sign.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\i_dnnt.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\i_nint.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_cat.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_cmp.c" />
+    <ClCompile Include="rtklib-source\lapack\libf2c\s_copy.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dgetf2.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dgetrf.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dgetri.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dgetrs.c" />
+    <ClCompile Include="rtklib-source\lapack\src\disnan.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlabad.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlacn2.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlacpy.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlaisnan.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlansy.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlaqsy.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlaset.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlassq.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlaswp.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlatrs.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlauu2.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dlauum.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpocon.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpoequ.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dporfs.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dposv.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dposvx.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpotf2.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpotrf.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpotri.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dpotrs.c" />
+    <ClCompile Include="rtklib-source\lapack\src\drscl.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dtrti2.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dtrtri.c" />
+    <ClCompile Include="rtklib-source\lapack\src\dtrtrs.c" />
+    <ClCompile Include="rtklib-source\lapack\src\ieeeck.c" />
+    <ClCompile Include="rtklib-source\lapack\src\ilaenv.c" />
+    <ClCompile Include="rtklib-source\lapack\src\iparmq.c" />
+    <ClCompile Include="rtklib-source\src\convgpx.c" />
+    <ClCompile Include="rtklib-source\src\convkml.c" />
+    <ClCompile Include="rtklib-source\src\convrnx.c" />
+    <ClCompile Include="rtklib-source\src\datum.c" />
+    <ClCompile Include="rtklib-source\src\download.c" />
+    <ClCompile Include="rtklib-source\src\ephemeris.c" />
+    <ClCompile Include="rtklib-source\src\geoid.c" />
+    <ClCompile Include="rtklib-source\src\gis.c" />
+    <ClCompile Include="rtklib-source\src\ionex.c" />
+    <ClCompile Include="rtklib-source\src\lambda.c" />
+    <ClCompile Include="rtklib-source\src\options.c" />
+    <ClCompile Include="rtklib-source\src\pntpos.c" />
+    <ClCompile Include="rtklib-source\src\postpos.c" />
+    <ClCompile Include="rtklib-source\src\ppp.c" />
+    <ClCompile Include="rtklib-source\src\ppp_ar.c" />
+    <ClCompile Include="rtklib-source\src\preceph.c" />
+    <ClCompile Include="rtklib-source\src\rcvraw.c" />
+    <ClCompile Include="rtklib-source\src\rcv\binex.c" />
+    <ClCompile Include="rtklib-source\src\rcv\crescent.c" />
+    <ClCompile Include="rtklib-source\src\rcv\javad.c" />
+    <ClCompile Include="rtklib-source\src\rcv\novatel.c" />
+    <ClCompile Include="rtklib-source\src\rcv\nvs.c" />
+    <ClCompile Include="rtklib-source\src\rcv\rt17.c" />
+    <ClCompile Include="rtklib-source\src\rcv\septentrio.c" />
+    <ClCompile Include="rtklib-source\src\rcv\skytraq.c" />
+    <ClCompile Include="rtklib-source\src\rcv\ss2.c" />
+    <ClCompile Include="rtklib-source\src\rcv\ublox.c" />
+    <ClCompile Include="rtklib-source\src\rinex.c" />
+    <ClCompile Include="rtklib-source\src\rtcm.c" />
+    <ClCompile Include="rtklib-source\src\rtcm2.c" />
+    <ClCompile Include="rtklib-source\src\rtcm3.c" />
+    <ClCompile Include="rtklib-source\src\rtcm3e.c" />
+    <ClCompile Include="rtklib-source\src\rtkcmn.c" />
+    <ClCompile Include="rtklib-source\src\rtkpos.c" />
+    <ClCompile Include="rtklib-source\src\rtksvr.c" />
+    <ClCompile Include="rtklib-source\src\sbas.c" />
+    <ClCompile Include="rtklib-source\src\solution.c" />
+    <ClCompile Include="rtklib-source\src\stream.c" />
+    <ClCompile Include="rtklib-source\src\streamsvr.c" />
+    <ClCompile Include="rtklib-source\src\tides.c" />
+    <ClCompile Include="rtklib-source\src\tle.c" />
+    <ClCompile Include="rtk_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gnss_data.hpp" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="PosData.hpp" />
+    <ClInclude Include="rtklib-source\lapack\include\blaswrap.h" />
+    <ClInclude Include="rtklib-source\lapack\include\clapack.h" />
+    <ClInclude Include="rtklib-source\lapack\include\f2c.h" />
+    <ClInclude Include="rtklib-source\src\rtklib.h" />
+    <ClInclude Include="rtklib-source\src\_rtklib.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
