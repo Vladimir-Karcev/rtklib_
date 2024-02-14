@@ -45,7 +45,7 @@
 #define ERR_CBIAS   0.3         /* code bias error Std (m) */
 #define REL_HUMI    0.7         /* relative humidity for Saastamoinen model */
 #define MIN_EL      (5.0*D2R)   /* min elevation for measurement error (rad) */
-#define RES_NUM		60
+#define RES_NUM		100
 
 /* Global structure to hold data need for computation of SPP -----------------*/
 export_t export_data;
