@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 	15.0 * D2R,{{0,0}},											/* elmin,snrmask */
 	EPHOPT_PREC,0,0,0,											/* sateph,modear,glomodear,bdsmodear */
 	5,0,10,1,													/* maxout,minlock,minfix,armaxiter */
-	IONOOPT_TEC,TROPOPT_SAAS,0,1,								/* estion,esttrop,dynamics,tidecorr */
+	IONOOPT_TEC,TROPOPT_EST,0,1,								/* estion,esttrop,dynamics,tidecorr */
 	3,0,0,0,0,													/* niter,codesmooth,intpref,sbascorr,sbassatsel */
 	0,0,														/* rovpos,refpos */
 	{100.0, 100.0, 100.0},										/* eratio[] */

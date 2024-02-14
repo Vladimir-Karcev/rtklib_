@@ -174,13 +174,20 @@ static void readsp3b(FILE *fp, char type, int *sats, int ns, double *bfact,
     peph_t peph;
     gtime_t time;
     double val,std,base;
-    int i,j,sat,sys,prn,n=ns*(type=='P'?1:2),pred_o,pred_c,v;
+    int i,j,sat,sys,prn,n=ns*(type=='P'?2:3),pred_o,pred_c,v;
     char buff[1024];
+
+    int dont_gets = 0;
     
     trace(3,"readsp3b: type=%c ns=%d index=%d opt=%d\n",type,ns,index,opt);
     
-    while (fgets(buff,sizeof(buff),fp)) {
-        
+    while (1) {
+
+        if (dont_gets == 0) {
+            if (!fgets(buff, sizeof(buff), fp)) break;
+        }
+
+        dont_gets = 0;
         if (!strncmp(buff,"EOF",3)) break;
         
         if (buff[0]!='*'||str2time(buff,3,28,&time)) {
@@ -205,6 +212,10 @@ static void readsp3b(FILE *fp, char type, int *sats, int ns, double *bfact,
         }
         for (i=pred_o=pred_c=v=0;i<n&&fgets(buff,sizeof(buff),fp);i++) {
             
+            if (buff[0] == '*') {
+                dont_gets = 1;
+                break;
+            }
             if (strlen(buff)<4||(buff[0]!='P'&&buff[0]!='V')) continue;
             
             sys=buff[1]==' '?SYS_GPS:code2sys(buff[1]);
