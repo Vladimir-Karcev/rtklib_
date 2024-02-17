@@ -73,28 +73,32 @@ static void init_bias_ix() {
         code_bias_ix[i][j]=-1;
 
     /* GPS */
-    code_bias_ix[0][CODE_L1W]=0;
-    code_bias_ix[0][CODE_L1C]=1;
-    code_bias_ix[0][CODE_L1L]=2;
-    code_bias_ix[0][CODE_L1X]=3;
-    code_bias_ix[0][CODE_L2W]=0;
-    code_bias_ix[0][CODE_L2L]=1;
-    code_bias_ix[0][CODE_L2S]=2;
-    code_bias_ix[0][CODE_L2X]=3;
+    //code_bias_ix[0][CODE_L1W]=0;
+    code_bias_ix[0][CODE_L1C]=0;
+    //code_bias_ix[0][CODE_L1L]=2;
+    //code_bias_ix[0][CODE_L1X]=3;
+    code_bias_ix[0][CODE_L2W]=1;
+    //code_bias_ix[0][CODE_L2L]=1;
+    //code_bias_ix[0][CODE_L2S]=2;
+    code_bias_ix[0][CODE_L2X]=1;
     /* GLONASS */
-    code_bias_ix[1][CODE_L1P]=0;
-    code_bias_ix[1][CODE_L1C]=1;
-    code_bias_ix[1][CODE_L2P]=0;
+    //code_bias_ix[1][CODE_L1P]=0;
+    code_bias_ix[1][CODE_L1C]=0;
+    //code_bias_ix[1][CODE_L2P]=0;
     code_bias_ix[1][CODE_L2C]=1;
     /* Galileo */
-    code_bias_ix[2][CODE_L1C]=0;
-    code_bias_ix[2][CODE_L1X]=1;
-    code_bias_ix[2][CODE_L5Q]=0;
-    code_bias_ix[2][CODE_L5I]=1;
-    code_bias_ix[2][CODE_L5X]=2;
+    //code_bias_ix[2][CODE_L1C]=0;
+    code_bias_ix[2][CODE_L1X]=0;
+    //code_bias_ix[2][CODE_L7Q]=0;
+    //code_bias_ix[2][CODE_L7I]=1;
+    code_bias_ix[2][CODE_L7X]=1;
+    //code_bias_ix[2][CODE_L5Q]=0;
+    //code_bias_ix[2][CODE_L5I]=1;
+    //code_bias_ix[2][CODE_L5X]=2;
     /* Beidou */
     code_bias_ix[3][CODE_L2I]=0;
-    code_bias_ix[3][CODE_L6I]=0;
+    code_bias_ix[3][CODE_L7I]=1;
+    //code_bias_ix[3][CODE_L6I]=0;
 }
 
 /* satellite code to satellite system ----------------------------------------*/
@@ -462,7 +466,7 @@ extern int code2bias_ix(int sys, int code) {
     if (sys_ix<MAX_BIAS_SYS)
         return code_bias_ix[sys_ix][code];
     else
-        return 0;
+        return -1;
 }
 /* read DCB parameters from BIA or BSX file ------------------------------------
 *    - supports satellite code biases only
@@ -493,9 +497,11 @@ extern /*static*/ int readbiaf(const char *file, nav_t *nav)
             freq=0;
         else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
             freq=1;
-        else continue;
+        else 
+            continue;
         
-        if (!(code1=obs2code(&obs1[1]))) continue; /* skip if code not valid */
+        if (!(code1=obs2code(&obs1[1]))) 
+            continue; /* skip if code not valid */
         bias_ix1=code2bias_ix(sys,code1);
 
         if (strcmp(bias,"OSB")==0) {
@@ -510,13 +516,21 @@ extern /*static*/ int readbiaf(const char *file, nav_t *nav)
         }
         else if (strcmp(bias,"DSB")==0) {
             /* differential signal bias */
-            if (obs1[1]!=obs2[1]) continue; /* skip biases between FREQ9 for now */
-            if (!(code2=obs2code(&obs2[1]))) continue; /* skip if code not valid */
+            //if (obs1[1]!=obs2[1]) continue; /* skip biases between freqs for now */
+            if (!(code2=obs2code(&obs2[1]))) 
+                continue; /* skip if code not valid */
+            /* system and obs code to frequency index */
+            freq = code2idx(sys, code2);
             bias_ix2=code2bias_ix(sys,code2);
+            if (bias_ix1 == -1 || bias_ix2 == -1) 
+                continue; /* skip if code not support */
             if (bias_ix1==0) /* this is ref code */
-                nav->cbias[sat-1][freq][bias_ix2-1]=cbias*1E-9*CLIGHT; /* ns -> m */
+                nav->cbias[sat-1][freq][bias_ix2-1]+=cbias*1E-9*CLIGHT; /* ns -> m */
             else if (bias_ix2==0) /* this is ref code */
-                nav->cbias[sat-1][freq][bias_ix1-1]=-cbias*1E-9*CLIGHT; /* ns -> m */
+                nav->cbias[sat-1][freq][bias_ix1-1]+=-cbias*1E-9*CLIGHT; /* ns -> m */
+            else if (code1 == CODE_L2W && code2 == CODE_L2X) {
+                nav->cbias[sat-1][freq][bias_ix2-1]+=cbias*1E-9*CLIGHT; /* ns -> m */
+            }
         }
     }
     fclose(fp);

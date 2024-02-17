@@ -181,7 +181,7 @@ extern "C" {
 #endif
 #ifdef ENACMP
 #define MINPRNCMP   1                   /* min satellite sat number of BeiDou */
-#define MAXPRNCMP   46                  /* max satellite sat number of BeiDou */
+#define MAXPRNCMP   63                  /* max satellite sat number of BeiDou */
 #define NSATCMP     (MAXPRNCMP-MINPRNCMP+1) /* number of BeiDou satellites */
 #define NSYSCMP     1
 #else
@@ -267,8 +267,8 @@ extern "C" {
 #define MAXLEAPS    64                  /* max number of leap seconds table */
 #define MAXGISLAYER 32                  /* max number of GIS data layers */
 #define MAXRCVCMD   4096                /* max length of receiver commands */
-#define MAX_CODE_BIASES 3               /* max # of different code biases per freq */
-#define MAX_CODE_BIAS_FREQS 2           /* max # of freqs supported for code biases  */
+#define MAX_CODE_BIASES 5               /* max # of different code biases per freq */
+#define MAX_CODE_BIAS_FREQS 3           /* max # of freqs supported for code biases  */
 
 #define RNX2VER     2.10                /* RINEX ver.2 default output version */
 #define RNX3VER     3.00                /* RINEX ver.3 default output version */
@@ -300,7 +300,7 @@ extern "C" {
 #define CODE_L1B    11                  /* obs code: E1B        (GAL) */
 #define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P),B1D+P (GAL,QZS,BDS) */
 #define CODE_L1Z    13                  /* obs code: E1A+B+C,L1S (GAL,QZS) */
-#define CODE_L2C    14                  /* obs code: L2C/A,G1C/A (GPS,GLO) */
+#define CODE_L2C    14                  /* obs code: L2C/A,G2C/A (GPS,GLO) */
 #define CODE_L2D    15                  /* obs code: L2 L1C/A-(P2-P1) (GPS) */
 #define CODE_L2S    16                  /* obs code: L2C(M)     (GPS,QZS) */
 #define CODE_L2L    17                  /* obs code: L2C(L)     (GPS,QZS) */

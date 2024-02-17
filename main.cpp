@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 
 	prcopt_t my_options = {										/* defaults processing options */
 	PMODE_PPP_KINEMA,SOLTYPE_FORWARD,							/* mode,soltype */
-	1,SYS_GPS | SYS_GLO | SYS_GAL | SYS_CMP,					/* nf,navsys */
+	2,SYS_GPS | SYS_GLO | SYS_GAL | SYS_CMP,					/* nf,navsys */
 	15.0 * D2R,{{0,0}},											/* elmin,snrmask */
 	EPHOPT_PREC,0,0,0,0,1,										/* sateph,modear,glomodear,gpsmodear,bdsmodear,arfilter */
 	20,0,4,5,10,20,												/* maxout,minlock,minfixsats,minholdsats,mindropsats,minfix */
