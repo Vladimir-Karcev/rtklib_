@@ -523,6 +523,8 @@ extern "C" {
 #define P2_50       8.881784197001252E-16 /* 2^-50 */
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
 
+#define RES_NUM		100
+
 #ifdef WIN32
 #define thread_t    HANDLE
 #define lock_t      CRITICAL_SECTION
@@ -575,6 +577,20 @@ typedef struct {        /* observation data */
     int tmcount;        /* time mark count */
     obsd_t *data;       /* observation data records */
 } obs_t;
+
+typedef struct {
+    int ntot;
+    double rcvclk;
+    double* range;
+    double* phase;
+    double* doppler;
+    double* snr;
+    double* satpos;
+    double* satclk;
+    double* sat;
+    double azel[2];
+    double* geom;
+} export_t;
 
 typedef struct {        /* earth rotation parameter data type */
     double mjd;         /* mjd (days) */
@@ -1830,6 +1846,38 @@ EXPORT void gis_free(gis_t *gis);
 extern int showmsg(const char *format,...);
 extern void settspan(gtime_t ts, gtime_t te);
 extern void settime(gtime_t time);
+
+typedef struct {
+    int sat;
+    int sys;
+    int prn;
+    int freq;
+    int week;
+    double az;
+    double el;
+    double snr;
+    double gpst;
+    double residual;   // code residual
+    double residual_c; // carrier phase residual
+    double p_error;
+    double prange;
+    double code_bias;
+    double range;
+    double doppler;
+    double phase;
+    double ref_range;
+    double dtr;
+    double dts;
+    double dion;
+    double dtrp;
+    double rs[3];
+    double glo_isb;
+    double gal_isb;
+    double cmp_isb;
+    double qzs_isb;
+    double varerr;
+} residual_t;
+
 
 #ifdef __cplusplus
 }

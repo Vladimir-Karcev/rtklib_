@@ -1325,7 +1325,7 @@ extern int outnmea_gga(uint8_t *buff, const sol_t *sol)
     if (sol->stat<=SOLQ_NONE) {
         p+=sprintf(p,"$%sGGA,,,,,,,,,,,,,,",NMEA_TID);
         for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q;
-        p+=sprintf(p,"*%02X%c%c",sum,0x0D,0x0A);
+        p+=sprintf(p,"*%02X\n",sum);
         return (int)(p-(char *)buff);
     }
     for (solq=0;solq<8;solq++) if (nmea_solq[solq]==sol->stat) break;
@@ -1343,7 +1343,7 @@ extern int outnmea_gga(uint8_t *buff, const sol_t *sol)
                pos[0]>=0?"N":"S",dms2[0],dms2[1]+dms2[2]/60.0,pos[1]>=0?"E":"W",
                solq,sol->ns,dop,pos[2]-h,h,sol->age,refid);
     for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
-    p+=sprintf(p,"*%02X\r\n",sum);
+    p+=sprintf(p,"*%02X\n",sum);
     return (int)(p-(char *)buff);
 }
 /* output solution in the form of NMEA GSA sentences -------------------------*/

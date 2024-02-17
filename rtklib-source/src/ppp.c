@@ -117,6 +117,9 @@
 #define ID(opt)     (NP(opt)+NC(opt)+NT(opt)+NI(opt))
 #define IB(s,f,opt) (NR(opt)+MAXSAT*(f)+(s)-1)
 
+residual_t ppp_residual[RES_NUM];
+FILE* ppp_out_file;
+
 /* standard deviation of state -----------------------------------------------*/
 static double STD(rtk_t *rtk, int i)
 {
@@ -935,11 +938,12 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
     prcopt_t *opt=&rtk->opt;
     double y,r,cdtr,bias,C=0.0,rr[3],pos[3],e[3],dtdx[3],L[NFREQ],P[NFREQ],Lc,Pc;
     double var[MAXOBS*2],dtrp=0.0,dion=0.0,vart=0.0,vari=0.0,dcb,freq;
+	double dion_tec = 0.0;
     double dantr[NFREQ]={0},dants[NFREQ]={0};
     double ve[MAXOBS*2*NFREQ]={0},vmax=0;
     char str[32];
     int ne=0,obsi[MAXOBS*2*NFREQ]={0},frqi[MAXOBS*2*NFREQ],maxobs,maxfrq,rej;
-    int i,j,k,sat,sys,nv=0,nx=rtk->nx,stat=1,frq,code;
+    int i,j,k,sat,sys,nv=0,nx=rtk->nx,stat=1,res_cnt=0,prn=0,frq,code;
 
     time2str(obs[0].time,str,2);
 
@@ -951,12 +955,15 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
     for (i=0;i<n&&i<MAXOBS;i++) {
         sat=obs[i].sat;
 
+        double gpst = 0.0, week = 0.0;
+        gpst = time2gpst(obs[i].time, &week);
+
         if ((r=geodist(rs+i*6,rr,e))<=0.0||
             satazel(pos,e,azel+i*2)<opt->elmin) {
             exc[i]=1;
             continue;
         }
-        if (!(sys=satsys(sat,NULL))||!rtk->ssat[sat-1].vs||
+        if (!(sys=satsys(sat,&prn))||!rtk->ssat[sat-1].vs||
             satexclude(sat,var_rs[i],svh[i],opt)||exc[i]) {
             exc[i]=1;
             continue;
@@ -1028,6 +1035,8 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             /* residual */
             v[nv]=y-(r+cdtr-CLIGHT*dts[i*2]+dtrp+C*dion+dcb+bias);
 
+            double resid = v[nv];
+
             if (code==0) rtk->ssat[sat-1].resc[frq]=v[nv];  /* carrier phase */
             else        rtk->ssat[sat-1].resp[frq]=v[nv];   /* pseudorange */
 
@@ -1037,6 +1046,8 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
                     j,opt,obs+i);
             var[nv] +=vart+SQR(C)*vari+var_rs[i];
             if (sys==SYS_GLO&&code==1) var[nv]+=VAR_GLO_IFB;
+
+            double verr = var[nv];
 
             trace(3,"%s sat=%2d %s%d res=%9.4f sig=%9.4f el=%4.1f\n",str,sat,
                   code?"P":"L",frq+1,v[nv],sqrt(var[nv]),azel[1+i*2]*R2D);
@@ -1054,6 +1065,41 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             }
             if (code==0) rtk->ssat[sat-1].vsat[frq]=1;
             nv++;
+            
+            // record residual
+            {
+            	int idx = res_cnt;
+            	ppp_residual[idx].sat = sat;
+            	ppp_residual[idx].sys = sys;
+            	ppp_residual[idx].prn = prn;
+            	ppp_residual[idx].freq = j;
+            	ppp_residual[idx].gpst = gpst;
+            	ppp_residual[idx].week = week;
+            	ppp_residual[idx].prange = obs[i].P[j];
+            	ppp_residual[idx].doppler = obs[i].D[j];
+            	ppp_residual[idx].phase = obs[i].L[j];
+            	ppp_residual[idx].az = azel[i * 2] * R2D;
+            	ppp_residual[idx].el = azel[1 + i * 2] * R2D;
+            	ppp_residual[idx].snr = obs[i].SNR[j] * SNR_UNIT;
+            	ppp_residual[idx].range = r;
+            	ppp_residual[idx].dts = CLIGHT * dts[i * 2];
+            	ppp_residual[idx].dtr = cdtr;
+            	ppp_residual[idx].glo_isb = x[IC(1, opt)];
+            	ppp_residual[idx].gal_isb = x[IC(2, opt)];
+            	ppp_residual[idx].cmp_isb = x[IC(3, opt)];
+            	ppp_residual[idx].qzs_isb = x[IC(4, opt)];
+            	ppp_residual[idx].dion = dion_tec + dion;
+            	ppp_residual[idx].dtrp = dtrp;
+            	ppp_residual[idx].varerr = verr;
+            
+            	
+            	ppp_residual[idx].residual = resid;
+            	
+            	ppp_residual[idx].rs[0] = (rs + i * 6)[0];
+            	ppp_residual[idx].rs[1] = (rs + i * 6)[1];
+            	ppp_residual[idx].rs[2] = (rs + i * 6)[2];
+            	res_cnt++;
+            }
         }
     }
     /* reject satellite with large and max post-fit residual */
@@ -1163,6 +1209,18 @@ static int test_hold_amb(rtk_t *rtk)
     /* test # of continuous fixed */
     return ++rtk->nfix>=rtk->opt.minfix;
 }
+
+void print_ppp_residual(const residual_t* res, const int cnt) {
+	for (int i = 0; i < cnt; i++) {
+		fprintf(ppp_out_file, "%d %.5f %d %d %d %.2f %.2f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n",
+			res[i].week, res[i].gpst, res[i].sys, res[i].prn, res[i].freq,
+			res[i].el, res[i].snr,
+			res[i].dtr, res[i].glo_isb, res[i].gal_isb,
+			res[i].dion, res[i].dtrp,
+			res[i].residual, res[i].varerr);
+	}
+}
+
 /* precise point positioning -------------------------------------------------*/
 extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
 {
@@ -1243,6 +1301,9 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         }
         /* update solution status */
         update_stat(rtk,obs,n,stat);
+        
+        /* print residuals */
+        print_ppp_residual(ppp_residual, nv);
 
         if (stat==SOLQ_FIX&&test_hold_amb(rtk)) {
             matcpy(rtk->x,xp,rtk->nx,1);

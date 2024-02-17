@@ -46,6 +46,23 @@
 #define MIN_EL      (5.0*D2R)   /* min elevation for measurement error (rad) */
 # define MAX_GDOP   30          /* max gdop for valid solution  */
 
+/* Global structure to hold data need for computation of SPP -----------------*/
+export_t export_data;
+residual_t spp_residual[RES_NUM];
+FILE* spp_out_file;
+static int res_cnt = 0;
+
+void print_spp_residual(FILE* fp, const residual_t* res, const int cnt) {
+	for (int i = 0; i < cnt; i++) {
+		fprintf(spp_out_file, "%d %.5f %d %d %d %.2f %.2f %.4f %.4f %.4f %.4f %.4f %.4f %.4f\n",
+			res[i].week, res[i].gpst, res[i].sys, res[i].prn, res[i].freq,
+			res[i].el, res[i].snr,
+			res[i].dtr, res[i].glo_isb, res[i].gal_isb,
+			res[i].dion, res[i].dtrp,
+			res[i].residual, res[i].varerr);
+	}
+}
+
 /* pseudorange measurement error variance ------------------------------------*/
 static double varerr(const prcopt_t *opt, const ssat_t *ssat, const obsd_t *obs, double el, int sys)
 {
@@ -286,10 +303,11 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
 {
     gtime_t time;
     double r,freq,dion=0.0,dtrp=0.0,vmeas,vion=0.0,vtrp=0.0,rr[3],pos[3],dtr,e[3],P;
-    int i,j,nv=0,sat,sys,mask[NX-3]={0};
+    int i,j,nv=0,sat,sys,mask[NX-3]={0},prn=0;
 
     for (i=0;i<3;i++) rr[i]=x[i];
     dtr=x[3];
+    res_cnt = 0;
     
     ecef2pos(rr,pos);
     trace(3,"rescode: rr=%.3f %.3f %.3f\n",rr[0], rr[1], rr[2]);
@@ -298,7 +316,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         vsat[i]=0; azel[i*2]=azel[1+i*2]=resp[i]=0.0;
         time=obs[i].time;
         sat=obs[i].sat;
-        if (!(sys=satsys(sat,NULL))) continue;
+        if (!(sys=satsys(sat, &prn))) continue;
         
         /* reject duplicated observation data */
         if (i<n-1&&i<MAXOBS-1&&sat==obs[i+1].sat) {
@@ -362,6 +380,41 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             var[nv++]+=varerr(opt,NULL,&obs[i],azel[1+i*2],sys);
         trace(4,"sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n",obs[i].sat,
               azel[i*2]*R2D,azel[1+i*2]*R2D,resp[i],sqrt(var[nv-1]));
+
+        double verr = var[nv-1];
+        
+        // Store residuals
+        {
+        	int idx = res_cnt;
+        	int week;
+        	spp_residual[idx].sat = sat;
+        	spp_residual[idx].sys = sys;
+        	spp_residual[idx].prn = prn;
+        	spp_residual[idx].freq = 0;
+        	spp_residual[idx].gpst = time2gpst(time, &week);
+        	spp_residual[idx].week = week;
+        	spp_residual[idx].prange = obs[i].P[0];
+        	spp_residual[idx].doppler = obs[i].D[0];
+        	spp_residual[idx].phase = obs[i].L[0];
+        	spp_residual[idx].az = azel[i * 2] * R2D;
+        	spp_residual[idx].el = azel[1 + i * 2] * R2D;
+        	spp_residual[idx].snr = obs[i].SNR[0] * SNR_UNIT;
+        	spp_residual[idx].range = r;
+        	spp_residual[idx].dts = CLIGHT * dts[i * 2];
+        	spp_residual[idx].dtr = dtr;
+        	spp_residual[idx].glo_isb = x[4];
+        	spp_residual[idx].gal_isb = x[5];
+        	spp_residual[idx].cmp_isb = x[6];
+        	spp_residual[idx].qzs_isb = x[7];
+        	spp_residual[idx].dion = dion;
+        	spp_residual[idx].dtrp = dtrp;
+        	spp_residual[idx].varerr = verr;
+        	spp_residual[idx].residual = v[nv];
+        	spp_residual[idx].rs[0] = (rs + i * 6)[0];
+        	spp_residual[idx].rs[1] = (rs + i * 6)[1];
+        	spp_residual[idx].rs[2] = (rs + i * 6)[2];
+        	res_cnt++;
+        }
     }
     /* constraint to avoid rank-deficient */
     for (i=0;i<NX-3;i++) {
@@ -414,6 +467,9 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     trace(3,"estpos  : n=%d\n",n);
     
     v=mat(n+4,1); H=mat(NX,n+4); var=mat(n+4,1);
+	
+	// Clear residual array
+	memset(spp_residual, 0, sizeof(residual_t) * RES_NUM);
     
     for (i=0;i<3;i++) x[i]=sol->rr[i];
 
@@ -461,12 +517,17 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
             if ((stat=valsol(azel,vsat,n,opt,v,nv,NX,msg))) {
                 sol->stat=opt->sateph==EPHOPT_SBAS?SOLQ_SBAS:SOLQ_SINGLE;
             }
+			/* Print residuals*/
+			print_spp_residual(spp_out_file, spp_residual, res_cnt);
             free(v); free(H); free(var);
             return stat;
         }
     }
     if (i>=MAXITR) sprintf(msg,"iteration divergent i=%d",i);
     
+	/* Print residuals*/
+	print_spp_residual(spp_out_file, spp_residual, res_cnt);
+	
     free(v); free(H); free(var);
     return 0;
 }

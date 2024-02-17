@@ -97,6 +97,7 @@ float unpackFloat(const void* buf, int* i) {
 int main(int argc, char* argv[]) {
 
 	unsigned char buffer[] = { 0x34, 0xA8, 0x1A, 0x41};
+	uint8_t gga[1024];
 
 	float t;
 	int ptr = 0;
@@ -110,15 +111,17 @@ int main(int argc, char* argv[]) {
 	char preciseEph[] = "../Data_for_RTKLib/OC/rt_sp30160.sp3";
 	char preciseClk[] = "../Data_for_RTKLib/OC/rt_crnx0160.clk";
 	char dcbFile[] = "../Data_for_RTKLib/DCB/CAS0MGXRAP_20240160000_01D_01D_DCB.BSX";
-	
+
 	// Log PPP residuals
 	ppp_out_file = fopen("residuals_ppp.txt", "w");
 	spp_out_file = fopen("residuals_spp.txt", "w");
 
+
 	// Log processing results and errors
-	std::ofstream outFile, errFile, sm_file;
+	std::ofstream outFile, errFile, sm_file, outNmea;
 	outFile.open("out_coord.txt");
 	errFile.open("error.txt");
+	outNmea.open("sol.nmea");
 	//outFile << "WEEK" << "\t" << "GPST" << "\t" << "X" << "\t" << "Y" << "\t" << "Z" << "\t" << std::endl;
 
 	obs_t obs{};
@@ -179,15 +182,15 @@ int main(int argc, char* argv[]) {
 	double epoch[6];
 
 	traceopen("trace.txt");
-	tracelevel(2);
+	tracelevel(3);
 
 	prcopt_t my_options = {										/* defaults processing options */
 	/* mode,soltype,nf,navsys */
-	PMODE_PPP_KINEMA,0,2, SYS_GPS | SYS_GAL | SYS_GLO | SYS_CMP,
+	PMODE_PPP_KINEMA,0,1, SYS_GPS | SYS_GAL | SYS_GLO | SYS_CMP,
 	15.0 * D2R,{{0,0}},											/* elmin,snrmask */
 	EPHOPT_PREC,0,0,0,											/* sateph,modear,glomodear,bdsmodear */
 	5,0,10,1,													/* maxout,minlock,minfix,armaxiter */
-	IONOOPT_TEC,TROPOPT_EST,0,1,								/* estion,esttrop,dynamics,tidecorr */
+	IONOOPT_TEC,UNB3M,0,1,										/* estion,esttrop,dynamics,tidecorr */
 	3,0,0,0,0,													/* niter,codesmooth,intpref,sbascorr,sbassatsel */
 	0,0,														/* rovpos,refpos */
 	{100.0, 100.0, 100.0},										/* eratio[] */
@@ -215,7 +218,7 @@ int main(int argc, char* argv[]) {
 	my_options.posopt[0] = 1; // PCV correction enable
 	my_options.posopt[2] = 2;
 	my_options.posopt[3] = 1; // test eclipse
-	my_options.posopt[4] = 0; // RAIM enable
+	my_options.posopt[4] = 1; // RAIM enable
 
 	//my_options.exsats[14] = 1;
 
@@ -239,7 +242,7 @@ int main(int argc, char* argv[]) {
 	gtime_t time{ 0 };
 
 	/* Random number to phase observation test*/
-	std::random_device rd;
+	/*std::random_device rd;
 	std::mt19937::result_type seed = rd() ^ (
 		(std::mt19937::result_type)
 		std::chrono::duration_cast<std::chrono::seconds>(
@@ -256,7 +259,7 @@ int main(int argc, char* argv[]) {
 	double phase_bias[33]{ 0.0 };
 	for (int i = 1; i < 33; i++) {
 		phase_bias[i] = distrib(gen);
-	}
+	}*/
 
 	// Main Processing Loop
 	for (iobs = 0; (m = nextobsf(&obs, &iobs, 0)) > 0; iobs += m) {
@@ -274,6 +277,9 @@ int main(int argc, char* argv[]) {
 
 		/* rover position by single point positioning */
 		if (!pntpos(data, j, &navData, &rtkData.opt, &rtkData.sol, NULL, rtkData.ssat, msg)) {
+			outnmea_gga(gga, &rtkData.sol);
+			outNmea << gga;
+			
 			if (!rtkData.opt.dynamics) {
 				outsolstat(&rtkData);
 			}
@@ -302,7 +308,6 @@ int main(int argc, char* argv[]) {
 			pppos(&rtkData, data, j, &navData);
 
 			if (rtkData.sol.stat == SOLQ_PPP) {
-
 				print_solution(std::string("PPP"), week, gpst, outFile, rtkData);
 				outsolstat(&rtkData);
 			}
@@ -310,6 +315,9 @@ int main(int argc, char* argv[]) {
 				errFile << std::string(rtkData.errbuf) << std::endl;
 				outsolstat(&rtkData);
 			}
+
+			outnmea_gga(gga, &rtkData.sol);
+			outNmea << gga;
 		}
 	}
 
@@ -317,5 +325,5 @@ int main(int argc, char* argv[]) {
 	errFile.close();
 	fclose(ppp_out_file);
 	fclose(spp_out_file);
-	//traceclose();
+	traceclose();
 }
