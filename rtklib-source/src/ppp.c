@@ -435,9 +435,9 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
             P[i]+=(nav->ssr[obs->sat-1].cbias[obs->code[i]-1]-nav->ssr[obs->sat-1].cbias[ix]);
         }
         else {   /* apply code bias corrections from file */
-            if (sys==SYS_GAL&&(i==1||i==2)) frq=3-i;  /* GAL biases are L1/L5 */
-            else frq=i;  /* other biases are L1/L2 */
-            frq = code2idx(sys, obs->code[i]);    /* system and obs code to frequency index */
+            //if (sys==SYS_GAL&&(i==1||i==2)) frq=3-i;  /* GAL biases are L1/L5 */
+            //else 
+                frq=i;  /* other biases are L1/L2 */
             //if (frq>=MAX_CODE_BIAS_FREQS) continue;  /* only 2 freqs per system supported in code bias table */
             bias_ix=code2bias_ix(sys,obs->code[i]); /* look up bias index in table */
             if (bias_ix>0) {  /*  0=ref code */
@@ -724,6 +724,8 @@ static void udbias_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     int i,j,k,f,sat,slip[MAXOBS]={0},clk_jump=0;
 
     trace(3,"udbias  : n=%d\n",n);
+
+    double t = time2gpst(obs[0].time, NULL);
 
     /* handle day-boundary clock jump */
     if (rtk->opt.posopt[5]) {
@@ -1304,7 +1306,7 @@ extern void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         update_stat(rtk,obs,n,stat);
         
         /* print residuals */
-        print_ppp_residual(ppp_residual, nv);
+        //print_ppp_residual(ppp_residual, nv);
 
         if (stat==SOLQ_FIX&&test_hold_amb(rtk)) {
             matcpy(rtk->x,xp,rtk->nx,1);

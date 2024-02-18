@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 	char ionFile[] = "../Data_for_RTKLib/INX/FugroExt_20240116_int30m_Merged.INX";
 	char pcvFile[] = "../Data_for_RTKLib/ANT/igs14_2185.atx";
 	char rinexEph[] = "../Data_for_RTKLib/EPH/BRDM00DLR_S_20240160000_01D_MN.rnx";
-	char rinexObs[] = "../Data_for_RTKLib/OBS/NDF9P-2024-01-16.24O";
+	char rinexObs[] = "../Data_for_RTKLib/OBS/OSF9P-2024-01-16.24O";
 	char preciseEph[] = "../Data_for_RTKLib/OC/rt_sp30160.sp3";
 	char preciseClk[] = "../Data_for_RTKLib/OC/rt_crnx0160.clk";
 	char dcbFile[] = "../Data_for_RTKLib/DCB/CAS0MGXRAP_20240160000_01D_01D_DCB.BSX";
@@ -125,7 +125,8 @@ int main(int argc, char* argv[]) {
 	std::ofstream outFile, errFile, sm_file, outNmea;
 	outFile.open("out_coord.txt");
 	errFile.open("error.txt");
-	outNmea.open("sol.nmea");
+	outNmea.open("NDF9P-2024-01-16.nmea");
+	bool resets = false;
 	//outFile << "WEEK" << "\t" << "GPST" << "\t" << "X" << "\t" << "Y" << "\t" << "Z" << "\t" << std::endl;
 
 	obs_t obs{};
@@ -186,15 +187,15 @@ int main(int argc, char* argv[]) {
 	double epoch[6];
 
 	traceopen("trace.txt");
-	tracelevel(3);
+	tracelevel(0);
 
 	prcopt_t my_options = {										/* defaults processing options */
 	PMODE_PPP_KINEMA,SOLTYPE_FORWARD,							/* mode,soltype */
 	2,SYS_GPS | SYS_GLO | SYS_GAL | SYS_CMP,					/* nf,navsys */
-	15.0 * D2R,{{0,0}},											/* elmin,snrmask */
+	10.0 * D2R,{{0,0}},											/* elmin,snrmask */
 	EPHOPT_PREC,0,0,0,0,1,										/* sateph,modear,glomodear,gpsmodear,bdsmodear,arfilter */
 	20,0,4,5,10,20,												/* maxout,minlock,minfixsats,minholdsats,mindropsats,minfix */
-	1,IONOOPT_TEC,TROPOPT_EST,0,1,								/* armaxiter,estion,esttrop,dynamics,tidecorr */
+	1,IONOOPT_EST,TROPOPT_EST,0,1,								/* armaxiter,estion,esttrop,dynamics,tidecorr */
 	3,0,0,0,0,													/* niter,codesmooth,intpref,sbascorr,sbassatsel */
 	0,0,														/* rovpos,refpos */
 	{100.0, 100.0, 100.0},										/* eratio[] */
@@ -224,6 +225,7 @@ int main(int argc, char* argv[]) {
 	my_options.posopt[2] = 2;
 	my_options.posopt[3] = 1; // test eclipse
 	my_options.posopt[4] = 1; // RAIM enable
+	my_options.posopt[5] = 1; // Clock jump
 
 	//my_options.exsats[14] = 1;
 
@@ -231,11 +233,8 @@ int main(int argc, char* argv[]) {
 	readpcv(pcvFile, &pcvss);
 	setpcv(obs.data[0].time, &my_options, &navData, &pcvss, &pcvsr, stas);
 
-	/* read DCB parameters from BIA or BSX file */
-	readbiaf(dcbFile, &navData);
-
 	/* Read DCB values P1 -> C1 */
-	//readdcb(dcbFile, &navData, NULL);
+	readdcb(dcbFile, &navData, NULL);
 	//readdcb(dcbFileP1P2, &navData, NULL);
 	//readdcb_mgex(dcbFile, &navData, obs.data[0].time);
 
@@ -279,6 +278,10 @@ int main(int argc, char* argv[]) {
 		int week = 0; double gpst = 0.0;
 		gpst = time2gpst(data->time, &week); // Observation data time
 		time = rtkData.sol.time; // previous epoch
+
+		if (!(long(gpst - 17.5) % 1800l) && resets) {
+			rtkinit(&rtkData, &my_options);
+		}
 		
 		/* rover position by single point positioning */
 		if (!pntpos(data, j, &navData, &rtkData.opt, &rtkData.sol, NULL, rtkData.ssat, msg)) {
@@ -287,7 +290,7 @@ int main(int argc, char* argv[]) {
 			if (!rtkData.opt.dynamics) {
 				outsolstat(&rtkData);
 			}
-			print_solution(std::string("SPP"), week, gpst, outFile, rtkData);
+			//print_solution(std::string("SPP"), week, gpst, outFile, rtkData);
 			errFile << week << '\t' << gpst << "\t" << std::string(msg) << std::endl;
 			continue;
 		}
@@ -300,7 +303,7 @@ int main(int argc, char* argv[]) {
 		/* single point positioning */
 		if (rtkData.opt.mode == PMODE_SINGLE) {
 			outsolstat(&rtkData);
-			print_solution(std::string("SPP"), week, gpst, outFile, rtkData);
+			//print_solution(std::string("SPP"), week, gpst, outFile, rtkData);
 			continue;
 		}
 
@@ -313,11 +316,11 @@ int main(int argc, char* argv[]) {
 
 			if (rtkData.sol.stat == SOLQ_PPP) {
 
-				print_solution(std::string("PPP"), week, gpst, outFile, rtkData);
+				//print_solution(std::string("PPP"), week, gpst, outFile, rtkData);
 				outsolstat(&rtkData);
 			}
 			else {
-				errFile << std::string(rtkData.errbuf) << std::endl;
+				//errFile << std::string(rtkData.errbuf) << std::endl;
 				outsolstat(&rtkData);
 			}
 			outnmea_gga(gga, &rtkData.sol);

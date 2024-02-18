@@ -518,7 +518,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
                 sol->stat=opt->sateph==EPHOPT_SBAS?SOLQ_SBAS:SOLQ_SINGLE;
             }
 			/* Print residuals*/
-			print_spp_residual(spp_out_file, spp_residual, res_cnt);
+			//print_spp_residual(spp_out_file, spp_residual, res_cnt);
             free(v); free(H); free(var);
             return stat;
         }
@@ -526,7 +526,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     if (i>=MAXITR) sprintf(msg,"iteration divergent i=%d",i);
     
 	/* Print residuals*/
-	print_spp_residual(spp_out_file, spp_residual, res_cnt);
+	//print_spp_residual(spp_out_file, spp_residual, res_cnt);
 	
     free(v); free(H); free(var);
     return 0;

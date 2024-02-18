@@ -73,18 +73,18 @@ static void init_bias_ix() {
         code_bias_ix[i][j]=-1;
 
     /* GPS */
-    //code_bias_ix[0][CODE_L1W]=0;
-    code_bias_ix[0][CODE_L1C]=0;
+    code_bias_ix[0][CODE_L1W]=0;
+    code_bias_ix[0][CODE_L1C]=1;
     //code_bias_ix[0][CODE_L1L]=2;
     //code_bias_ix[0][CODE_L1X]=3;
-    code_bias_ix[0][CODE_L2W]=1;
+    code_bias_ix[0][CODE_L2W]=0;
     //code_bias_ix[0][CODE_L2L]=1;
     //code_bias_ix[0][CODE_L2S]=2;
     code_bias_ix[0][CODE_L2X]=1;
     /* GLONASS */
-    //code_bias_ix[1][CODE_L1P]=0;
-    code_bias_ix[1][CODE_L1C]=0;
-    //code_bias_ix[1][CODE_L2P]=0;
+    code_bias_ix[1][CODE_L1P]=0;
+    code_bias_ix[1][CODE_L1C]=1;
+    code_bias_ix[1][CODE_L2P]=0;
     code_bias_ix[1][CODE_L2C]=1;
     /* Galileo */
     //code_bias_ix[2][CODE_L1C]=0;
@@ -94,11 +94,11 @@ static void init_bias_ix() {
     code_bias_ix[2][CODE_L7X]=1;
     //code_bias_ix[2][CODE_L5Q]=0;
     //code_bias_ix[2][CODE_L5I]=1;
-    //code_bias_ix[2][CODE_L5X]=2;
+    code_bias_ix[2][CODE_L5X]=0;
     /* Beidou */
     code_bias_ix[3][CODE_L2I]=0;
+    code_bias_ix[3][CODE_L6I]=0;
     code_bias_ix[3][CODE_L7I]=1;
-    //code_bias_ix[3][CODE_L6I]=0;
 }
 
 /* satellite code to satellite system ----------------------------------------*/
@@ -503,21 +503,25 @@ extern /*static*/ int readbiaf(const char *file, nav_t *nav)
         }
         else if (strcmp(bias,"DSB")==0) {
             /* differential signal bias */
-            //if (obs1[1]!=obs2[1]) continue; /* skip biases between freqs for now */
+            if (obs1[1]!=obs2[1]&&(sys==SYS_GPS||sys==SYS_GLO)) continue; /* skip biases between freqs for now */
             if (!(code2=obs2code(&obs2[1]))) 
                 continue; /* skip if code not valid */
             /* system and obs code to frequency index */
-            freq = code2idx(sys, code2);
             bias_ix2=code2bias_ix(sys,code2);
-            if (bias_ix1 == -1 || bias_ix2 == -1) 
+            if (bias_ix1==-1||bias_ix2==-1) 
                 continue; /* skip if code not support */
-            if (bias_ix1==0) /* this is ref code */
+            if (sys==SYS_GAL&&code1==CODE_L1X&&code2==CODE_L5X)
+                nav->cbias[sat-1][1][0]+=-cbias*1E-9*CLIGHT; /* ns -> m */
+            else if (sys==SYS_GAL&&code1==CODE_L1X&&code2==CODE_L7X)
+                nav->cbias[sat-1][1][0]+=cbias*1E-9*CLIGHT; /* ns -> m */
+            else if (sys==SYS_CMP&&code1==CODE_L2I&&code2==CODE_L7I)
+                nav->cbias[sat-1][1][0]+=cbias*1E-9*CLIGHT; /* ns -> m */
+            else if (sys==SYS_CMP&&code1==CODE_L2I&&code2==CODE_L6I)
+                nav->cbias[sat-1][1][0]+=-cbias*1E-9*CLIGHT; /* ns -> m */
+            else if (bias_ix1==0) /* this is ref code */
                 nav->cbias[sat-1][freq][bias_ix2-1]+=cbias*1E-9*CLIGHT; /* ns -> m */
             else if (bias_ix2==0) /* this is ref code */
                 nav->cbias[sat-1][freq][bias_ix1-1]+=-cbias*1E-9*CLIGHT; /* ns -> m */
-            else if (code1 == CODE_L2W && code2 == CODE_L2X) {
-                nav->cbias[sat-1][freq][bias_ix2-1]+=cbias*1E-9*CLIGHT; /* ns -> m */
-            }
         }
     }
     fclose(fp);
