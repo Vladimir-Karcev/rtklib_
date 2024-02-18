@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
 	char ionFile[] = "../Data_for_RTKLib/INX/FugroExt_20240116_int30m_Merged.INX";
 	char pcvFile[] = "../Data_for_RTKLib/ANT/igs14_2185.atx";
 	char rinexEph[] = "../Data_for_RTKLib/EPH/BRDM00DLR_S_20240160000_01D_MN.rnx";
-	char rinexObs[] = "../Data_for_RTKLib/OBS/OSF9P-2024-01-16.24O";
+	char rinexObs[] = "../Data_for_RTKLib/OBS/NDF9P-2024-01-16.24O";
 	char preciseEph[] = "../Data_for_RTKLib/OC/rt_sp30160.sp3";
 	char preciseClk[] = "../Data_for_RTKLib/OC/rt_crnx0160.clk";
 	char dcbFile[] = "../Data_for_RTKLib/DCB/CAS0MGXRAP_20240160000_01D_01D_DCB.BSX";
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 	double epoch[6];
 
 	traceopen("trace.txt");
-	tracelevel(0);
+	tracelevel(2);
 
 	prcopt_t my_options = {										/* defaults processing options */
 	PMODE_PPP_KINEMA,SOLTYPE_FORWARD,							/* mode,soltype */
